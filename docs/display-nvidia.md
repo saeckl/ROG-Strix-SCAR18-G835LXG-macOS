@@ -31,7 +31,11 @@
   Analysis, reproducer and a source patch for NullMoth: [nullmoth-fix/](../nullmoth-fix).
   Performance afterwards: about 30 FPS at render scale 67 % (≈ 2560×1600), 39 FPS at 50 %, GPU at
   99 %; CPU, power profile and `NVMTL_SHARED_VRAM=1` make no difference, so the limit is the
-  Metal→Vulkan/NVK path (Windows: >100 FPS with the same settings).
+  Metal→Vulkan/NVK path and the GPU clock (Windows: ~100 FPS with the same settings, even in "Quiet").
+- **GPU clock:** measured ~950 MHz (single dependent FMA chain) and 14 TFLOPS under full load, far below
+  boost. The NullMoth kernel driver does not answer the firmware's NVPCF/GPS power interfaces, so the GPU
+  apparently stays near base clock; the ASUS profile only changes fans/CPU. Details:
+  [nullmoth-fix/GPU-CLOCK.md](../nullmoth-fix/GPU-CLOCK.md).
 - **Panel:** native 3840×2400 up to 240 Hz; macOS uses HiDPI "looks like 1920×1200", so games list
   1920×1200 and the real resolution is set with their render scale.
 - **Photo Booth shows no live preview** (photos are taken, FaceTime shows live video). The camera
