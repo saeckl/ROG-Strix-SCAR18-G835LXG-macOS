@@ -4,7 +4,7 @@
 # the factory calibration is read from this machine's UEFI variable CALI_DATA.
 set -euo pipefail
 cd "$(dirname "$0")"
-VERSION=0.5.0
+VERSION=0.5.2
 mkdir -p build
 python3 generate_test_tables.py          # -> TAS2781TestTables.hpp (contains YOUR calibration)
 sdk=$(xcrun --sdk macosx --show-sdk-path)

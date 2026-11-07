@@ -31,7 +31,7 @@ This is a hobby project on one laptop. Everything here was tested on exactly one
 | Boot, multi-boot macOS / Windows / Ubuntu | works | OpenCore 1.0.9, text picker, 10 s timeout → macOS |
 | NVIDIA RTX 5090, internal panel, Metal | works with limitations | [NullMoth NVIDIA driver](https://github.com/nullmoth/nvidia-macos-driver) 2.7.2 |
 | Internal speakers (left + right) | **works** | VoodooHDA + [TAS2781DirectI2C](drivers/TAS2781DirectI2C) (this repo) |
-| Headphone jack | detected as separate device | VoodooHDA (not fully tested) |
+| Headphone jack | works; plugging in mutes the speakers | VoodooHDA + jack sense in TAS2781DirectI2C 0.5.2 |
 | Volume, mute | works | macOS volume → DAC gain |
 | Wi-Fi (BE200) | works | AirportItlwm (Tahoe build) + IO80211FamilyLegacy / IOSkywalkFamily |
 | Bluetooth | works | IntelBluetoothFirmware + IntelBTPatcher + BlueToolFixup |
@@ -44,7 +44,7 @@ This is a hobby project on one laptop. Everything here was tested on exactly one
 | Fn+F4 Aura effects | **works** | asus-hotkeys |
 | Fn+F7 / Fn+F8 display brightness | software dimming only | the NVIDIA driver exposes no backlight, see below |
 | Sleep / wake | audio re-initializes after wake; not tested in depth | |
-| Microphone | not tested | |
+| Internal microphone | works (tested) | VoodooHDA |
 | Webcam (ASUS FHD) | detected, not tested in apps | native UVC |
 
 ## What does not work
@@ -56,7 +56,7 @@ This is a hobby project on one laptop. Everything here was tested on exactly one
 - **Some Metal games.** World of Warcraft shows a black screen: `newComputePipelineState:
   vkCreateComputePipelines FAILED`, then "Device context was lost" in a loop. This is in the
   NullMoth Metal layer (NVMTL over NVK) and was reported to NullMoth.
-- **Left/right balance and the headphone path** have not been checked in depth since audio v0.5.
+- **Left/right balance** has not been checked in depth since audio v0.5.
 
 ## Repository layout
 

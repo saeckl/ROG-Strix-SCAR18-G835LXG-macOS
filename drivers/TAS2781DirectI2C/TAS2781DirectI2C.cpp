@@ -148,6 +148,7 @@ private:
     int lastActive = -1;                           // engine index currently driving the amps
     SInt64 lastVolume = -1, lastMute = -1;
     unsigned initFailures = 0, idleTicks = 0;
+    int lastPlugged = -1;
     static void polled(OSObject *owner, IOTimerEventSource *);
     void pollTick();
     bool findEngines();
@@ -158,6 +159,9 @@ private:
     void releaseCodec();
     bool ampsHealthy();
     void mirrorSlave(bool force);
+    bool headphonesPlugged();
+    void speakerPins(bool on);
+    UInt32 pin14Ctl = 0x40;
     UInt32 slFmt = 0xffffffff, slStream = 0xffffffff, slL = 0xffffffff, slR = 0xffffffff;
     unsigned mirrorTicks = 0;
 public:
@@ -828,6 +832,35 @@ void TAS2781DirectI2C::releaseCodec()
     slFmt = slStream = slL = slR = 0xffffffff;
 }
 
+// Jack sense of the headphone pin 0x21 (bit 31 of GET_PIN_SENSE). Pin 0x21 is connected to
+// DAC 0x03, so while headphones are plugged the mirrored speaker stream plays there and the
+// amplifiers must stay off, as on Windows/Linux.
+bool TAS2781DirectI2C::headphonesPlugged()
+{
+    UInt32 sense = 0;
+    return verb((0x21u << 20) | (0xF09u << 8), &sense) && (sense & 0x80000000u);
+}
+
+// Linux auto-mute: with headphones plugged the speaker pins 0x14 and 0x17 are switched off,
+// otherwise the codec still drives the speakers quietly even with the amplifiers shut down.
+void TAS2781DirectI2C::speakerPins(bool on)
+{
+    UInt32 ctl = 0, dummy;
+    if (!verb((0x14u << 20) | (0xF07u << 8), &ctl))
+        return;
+    if (on) {
+        if (!(ctl & 0x40))
+            verb((0x14u << 20) | (0x707u << 8) | (pin14Ctl & 0xff), &dummy);
+        slFmt = 0xffffffff;                      // next mirror re-enables pin 0x17
+    } else {
+        if (ctl & 0x40) {
+            pin14Ctl = ctl & 0xff;
+            verb((0x14u << 20) | (0x707u << 8), &dummy);
+        }
+        verb((0x17u << 20) | (0x707u << 8), &dummy);
+    }
+}
+
 // After sleep or a power loss the amplifiers read back 0x00 until a software reset.
 bool TAS2781DirectI2C::ampsHealthy()
 {
@@ -873,11 +906,25 @@ void TAS2781DirectI2C::pollTick()
     int active = engineRunning(0) && !headphones ? 0 : -1;
     if (active >= 0) {
         // Mirror on start, then check every 500 ms (VoodooHDA changes DAC 0x02 on volume/balance).
+        bool plugged = headphonesPlugged();
+        if (plugged != (lastPlugged == 1)) {
+            if (!plugged && lastPlugged == 1)
+                speakerPins(true);
+            lastPlugged = plugged;
+            note("HeadphonesPlugged", plugged);
+        }
         if (lastActive < 0 || ++mirrorTicks >= 2) {
             mirrorSlave(lastActive < 0);
             mirrorTicks = 0;
         }
-        if (!powered) {
+        if (plugged)
+            speakerPins(false);                  // every tick: VoodooHDA may re-enable pin 0x14
+        if (plugged) {
+            if (powered) {
+                doShutdown();
+                publishStatus("auto: headphones plugged, speakers off");
+            }
+        } else if (!powered) {
             if (!ampsHealthy()) {           // lost state (wake, power loss): full init again
                 initialized = false;
                 if (doInit() != kIOReturnSuccess) {

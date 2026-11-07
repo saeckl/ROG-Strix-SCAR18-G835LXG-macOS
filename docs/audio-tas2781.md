@@ -62,13 +62,18 @@ Fix used here:
   (pin control `0x40`, connection 1, unmute, D0). Verbs go through the HDA immediate command
   interface (`ICOI 0x60`, `IRII 0x64`, `ICIS 0x68` in BAR0), alongside VoodooHDA.
 
-## The driver (TAS2781DirectI2C 0.5.0)
+## The driver (TAS2781DirectI2C 0.5.2)
 
 - Matches the I²C0 PCI device, maps the DesignWare registers, uses polled transfers with the
   controller interrupts masked; the TX FIFO is filled with CPU interrupts disabled.
 - 10 s after start: init. Then every 250 ms it watches the VoodooHDA engines (found by
   description: "Speaker" / "Head"): speaker engine running and headphones not → check amp health,
   re-init if needed, power up, mirror DAC 0x03. After 4 idle ticks → shutdown.
+- Headphones: pin `0x21` is connected to DAC `0x03`, so the mirrored speaker stream also reaches
+  the jack. The driver reads the jack sense (`GET_PIN_SENSE`, bit 31) every tick; while headphones
+  are plugged the amplifiers stay off and the codec's speaker pins `0x14` and `0x17` are switched
+  off (pin control 0, like Linux auto-mute; without this the speakers stay faintly audible), so
+  the sound plays only in the headphones. Unplugging restores both pins and powers the amps up. Selecting the "Headphones" device in macOS works as well.
 - Sleep: shutdown before sleep, re-init 3 s after wake.
 - Commands (root) through `direct-control`: `status`, `reset`, `init`, `powerup`, `shutdown`,
   `atten=N`, `autooff=S`, `auto=0|1`, `dump=BB.PP`, `wr=CH.BB.PP.RR.VV`, `verb=HEX`,
@@ -82,8 +87,6 @@ calibration. See [drivers/TAS2781DirectI2C/README.md](../drivers/TAS2781DirectI2
 ## Open points
 
 - Balance and system-sound behaviour after v0.5 not fully confirmed.
-- Headphones: the driver keeps the amplifiers off while the headphone engine runs; jack detection
-  is VoodooHDA's.
-- Microphone not tested.
+- Internal microphone works (VoodooHDA).
 - VoodooI2C also attaches to the I²C0 controller. Concurrent access from VoodooI2C and
   TAS2781DirectI2C is not synchronised; it has caused no problems so far, but it is not proven safe.
