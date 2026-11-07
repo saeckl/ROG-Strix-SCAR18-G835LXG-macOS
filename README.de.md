@@ -22,6 +22,11 @@ OpenCore-EFI, Treiber und Befunde für **macOS 26 Tahoe** auf dem ASUS ROG Strix
 - Echte Display-Helligkeit (der NVIDIA-Treiber bietet keine Hintergrundbeleuchtung an).
 - Manche Metal-Spiele, z. B. World of Warcraft (schwarzer Bildschirm, an NullMoth gemeldet).
 
+## Ruhezustand
+
+Funktioniert nicht: Beim Aufwachen startet der Laptop neu (BIOS setzt S3 nicht fort, vermutlich nur
+Modern Standby). Lösung hier: Systemschlaf mit `pmset` abschalten, nur der Bildschirm geht aus.
+
 ## Kern der Ton-Lösung
 
 1. Die TAS2781-Verstärker liefern nach dem macOS-Start auf jedem Register `0x00`, bis ein

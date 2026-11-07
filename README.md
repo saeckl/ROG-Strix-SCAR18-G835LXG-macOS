@@ -43,7 +43,7 @@ This is a hobby project on one laptop. Everything here was tested on exactly one
 | Fn+F2 / Fn+F3 keyboard backlight | **works** | asus-hotkeys (N-KEY feature report) |
 | Fn+F4 Aura effects | **works** | asus-hotkeys |
 | Fn+F7 / Fn+F8 display brightness | software dimming only | the NVIDIA driver exposes no backlight, see below |
-| Sleep / wake | audio re-initializes after wake; not tested in depth | |
+| Sleep / wake | **does not work** – the laptop reboots on wake, see below | sleep disabled with `pmset` |
 | Internal microphone | works (tested) | VoodooHDA |
 | Webcam (ASUS FHD) | works (FaceTime live, up to 1920×1080); Photo Booth takes photos but shows no live preview | native UVC |
 
@@ -56,6 +56,16 @@ This is a hobby project on one laptop. Everything here was tested on exactly one
 - **Some Metal games.** World of Warcraft shows a black screen: `newComputePipelineState:
   vkCreateComputePipelines FAILED`, then "Device context was lost" in a loop. This is in the
   NullMoth Metal layer (NVMTL over NVK) and was reported to NullMoth.
+
+- **Sleep (S3).** macOS enters sleep normally, but on wake the firmware does not resume and
+  the laptop boots from scratch (`Failure during sleep: 0x1F – EFI/Bootrom Failure after last
+  point of entry to sleep`); open work is lost. The machine most likely supports only Windows'
+  Modern Standby (S0ix). Workaround used here: no system sleep, only display sleep:
+  ```bash
+  sudo pmset -a sleep 0 standby 0 hibernatemode 0 powernap 0 disablesleep 1
+  ```
+  The laptop keeps running with the lid closed, so shut it down before putting it in a bag.
+  Hibernation (OpenCore `HibernateMode`) has not been tried yet.
 
 ## Repository layout
 
