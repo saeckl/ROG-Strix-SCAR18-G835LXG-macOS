@@ -44,7 +44,7 @@ This is a hobby project on one laptop. Everything here was tested on exactly one
 | Fn+F4 Aura effects | **works** | asus-hotkeys |
 | Lighting app (colours, 12 effects, zones keyboard / light bar / logo) | **works** | [ROG Licht](tools/asus-hotkeys) menu bar app (this repo) |
 | Fn+F7 / Fn+F8 display brightness | software dimming only | the NVIDIA driver exposes no backlight, see below |
-| Sleep / wake | **does not work** – the laptop reboots on wake, see below | sleep disabled with `pmset` |
+| Sleep / wake | **does not work** – the laptop reboots on wake (firmware is Modern Standby only, FADT `LOW_POWER_S0_IDLE`), see below | sleep disabled with `pmset` |
 | Internal microphone | works (tested) | VoodooHDA |
 | Webcam (ASUS FHD) | works (FaceTime live, up to 1920×1080); Photo Booth takes photos but shows no live preview | native UVC |
 
@@ -54,9 +54,9 @@ This is a hobby project on one laptop. Everything here was tested on exactly one
   NullMoth framebuffer does not register a backlight, `_BCM` of the panel is empty and ASUS-WMI
   has no panel brightness. Fn+F7/F8 therefore dim with a gamma curve (25–100 %); the backlight
   and power draw stay the same.
-- **Some Metal games.** World of Warcraft shows a black screen: `newComputePipelineState:
-  vkCreateComputePipelines FAILED`, then "Device context was lost" in a loop. This is in the
-  NullMoth Metal layer (NVMTL over NVK) and was reported to NullMoth.
+- **World of Warcraft** needed a driver workaround (black screen, NAK compiler panic) and runs at
+  about 30–40 FPS, far below Windows. Details and a patch for NullMoth:
+  [docs/display-nvidia.md](docs/display-nvidia.md), [nullmoth-fix/](nullmoth-fix).
 
 - **Sleep (S3).** macOS enters sleep normally, but on wake the firmware does not resume and
   the laptop boots from scratch (`Failure during sleep: 0x1F – EFI/Bootrom Failure after last

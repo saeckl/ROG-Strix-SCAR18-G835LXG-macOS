@@ -1,0 +1,26 @@
+--- a/src/nouveau/compiler/nak_nir.c
++++ b/src/nouveau/compiler/nak_nir.c
+@@ -2596,12 +2596,23 @@ nak_cg_predload_side(nir_block *blk, unsigned *loads)
+       case nir_instr_type_intrinsic: {
+          nir_intrinsic_instr *intr = nir_instr_as_intrinsic(instr);
+          if (intr->intrinsic != nir_intrinsic_load_global &&
+              intr->intrinsic != nir_intrinsic_load_global_constant)
+             return -1;
+          if (nir_intrinsic_access(intr) & (ACCESS_VOLATILE | ACCESS_COHERENT))
++            return -1;
++         /* nak_cg_predload runs after nir_opt_load_store_vectorize (which combines optimistically,
++          * "we legalize these later") but before nir_lower_mem_access_bit_sizes, and that pass does
++          * not split load_global_nv. A hoisted load must therefore already be one LDG: 1, 2, 4, 8 or
++          * 16 bytes and aligned to its size. Otherwise from_nir panics: a vec4 with align 4 trips
++          * "size_B <= intrin.align()", a vec3 (12 bytes) "Invalid memory load/store size"
++          * (World of Warcraft Prism compute kernels on GB203, NullMoth 2.7.2). */
++         const unsigned bytes = intr->def.num_components * (intr->def.bit_size / 8);
++         if (intr->def.bit_size < 8 || bytes > 16 || !util_is_power_of_two_nonzero(bytes) ||
++             bytes > nir_combined_align(nir_intrinsic_align_mul(intr),
++                                        nir_intrinsic_align_offset(intr)))
+             return -1;
+          (*loads)++;
+          n++;
+          break;
+       }
+       default:
