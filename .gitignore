@@ -1,0 +1,8 @@
+.DS_Store
+build/
+out/
+*.o
+# TI firmware and the generated tables (contain TI firmware and YOUR factory calibration)
+drivers/TAS2781DirectI2C/firmware/*.bin
+drivers/TAS2781DirectI2C/TAS2781TestTables.hpp
+audio/VoodooHDA/VoodooHDA/
