@@ -40,7 +40,7 @@ There is no WMI path (`DEVS 0x00050021` returns `0xFFFFFFFE`). Feature reports t
 | Set / apply | `5D B5`, then `5D B4` |
 | Zone power | `5D BD 01 b0 b1 b2 b3` (see below) |
 
-Modes (from asusctl, all confirmed on the G835LXG): `0` static, `1` breathe (2 colours),
+Modes (from asusctl; static and rainbow wave confirmed by hand, the rest used via ROG Licht): `0` static, `1` breathe (2 colours),
 `2` colour cycle, `3` rainbow wave (direction), `4` stars (2 colours), `5` rain, `6` highlight,
 `7` laser, `8` ripple, `10` pulse, `11` comet, `12` flash. Speed `E1` slow, `EB` medium,
 `F5` fast. Direction `0` right, `1` left, `2` up, `3` down. There are no separate colour zones on
