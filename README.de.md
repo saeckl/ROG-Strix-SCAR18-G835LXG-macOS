@@ -11,7 +11,8 @@ OpenCore-EFI, Treiber und Befunde für **macOS 26 Tahoe** auf dem ASUS ROG Strix
 - RTX 5090 und internes Display mit dem [NullMoth-NVIDIA-Treiber](https://github.com/nullmoth/nvidia-macos-driver).
 - **Interne Lautsprecher** links und rechts: VoodooHDA + eigener Treiber TAS2781DirectI2C.
 - Kopfhörer (Einstecken schaltet die Lautsprecher ab) und internes Mikrofon.
-- WLAN (BE200), Bluetooth, Ethernet, Touchpad, Akku, Webcam wird erkannt.
+- WLAN (BE200), Bluetooth, Ethernet, Touchpad, Akku.
+- Webcam (FaceTime mit Live-Bild; Photo Booth macht Fotos, zeigt aber kein Live-Bild).
 - **Fn+M4** Leistungsprofil Leise/Leistung/Turbo, Start im Leise-Profil wie unter Windows.
 - **Fn+F2/F3** Tastaturlicht, **Fn+F4** Aura-Effekte.
 - **Fn+F7/F8** Display-Helligkeit, aber nur per Software-Abdunkelung.

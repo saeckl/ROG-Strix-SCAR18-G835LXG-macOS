@@ -45,7 +45,7 @@ This is a hobby project on one laptop. Everything here was tested on exactly one
 | Fn+F7 / Fn+F8 display brightness | software dimming only | the NVIDIA driver exposes no backlight, see below |
 | Sleep / wake | audio re-initializes after wake; not tested in depth | |
 | Internal microphone | works (tested) | VoodooHDA |
-| Webcam (ASUS FHD) | detected, not tested in apps | native UVC |
+| Webcam (ASUS FHD) | works (FaceTime live, up to 1920×1080); Photo Booth takes photos but shows no live preview | native UVC |
 
 ## What does not work
 

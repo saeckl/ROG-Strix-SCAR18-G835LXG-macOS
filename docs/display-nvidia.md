@@ -21,3 +21,6 @@
   `newComputePipelineState: vkCreateComputePipelines FAILED` (MTLLibraryErrorDomain Code=3,
   Prism shader), then `Device context was lost` in a loop (523× in one run) and `newBuffer Failed`.
   Reported to NullMoth.
+- **Photo Booth shows no live preview** (photos are taken, FaceTime shows live video). The camera
+  delivers a steady stream in all formats, so this is most likely Photo Booth's Core Image/Metal
+  preview path on the NullMoth driver.
