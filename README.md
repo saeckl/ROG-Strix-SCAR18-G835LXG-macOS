@@ -28,7 +28,7 @@ This is a hobby project on one laptop. Everything here was tested on exactly one
 
 | Function | Status | How |
 | --- | --- | --- |
-| Boot, multi-boot macOS / Windows / Ubuntu | works | OpenCore 1.0.9, text picker, 10 s timeout → macOS |
+| Boot, multi-boot macOS / Windows / Ubuntu | **works** (tested) | OpenCore 1.0.9, text picker showing only macOS, Windows, Linux; 10 s timeout → macOS |
 | NVIDIA RTX 5090, internal panel, Metal | works with limitations | [NullMoth NVIDIA driver](https://github.com/nullmoth/nvidia-macos-driver) 2.7.2 |
 | Internal speakers (left + right, balance slider) | **works** | VoodooHDA + [TAS2781DirectI2C](drivers/TAS2781DirectI2C) (this repo) |
 | Headphone jack | works; plugging in mutes the speakers | VoodooHDA + jack sense in TAS2781DirectI2C 0.5.2 |
