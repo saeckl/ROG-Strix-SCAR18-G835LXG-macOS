@@ -36,10 +36,34 @@ There is no WMI path (`DEVS 0x00050021` returns `0xFFFFFFFE`). Feature reports t
 | --- | --- |
 | Handshake | `5A "ASUS Tech.Inc." 00` |
 | Brightness 0..3 | `5A BA C5 C4 <level>` |
-| Effect | `5D B3 00 <mode> R G B <speed EB> 00 00 …` then `5D B5`, `5D B4` |
+| Effect | `5D B3 <zone 00> <mode> R G B <speed> <dir> 00 R2 G2 B2 00 00 00 00` |
+| Set / apply | `5D B5`, then `5D B4` |
+| Zone power | `5D BD 01 b0 b1 b2 b3` (see below) |
 
-Modes used: `00` static, `01` breathing, `02` colour cycle, `03` rainbow. They can be changed in
-`config.json` without rebuilding.
+Modes (from asusctl, all confirmed on the G835LXG): `0` static, `1` breathe (2 colours),
+`2` colour cycle, `3` rainbow wave (direction), `4` stars (2 colours), `5` rain, `6` highlight,
+`7` laser, `8` ripple, `10` pulse, `11` comet, `12` flash. Speed `E1` slow, `EB` medium,
+`F5` fast. Direction `0` right, `1` left, `2` up, `3` down. There are no separate colour zones on
+this model (asusctl `G835L`: per-key layout, `basic_zones: []`); one colour for all zones.
+
+### Zone power (`5D BD 01`, 32-bit little endian)
+
+| Zone | boot | awake | sleep | shutdown |
+| --- | --- | --- | --- | --- |
+| Logo | bit 0 | bit 2 | bit 4 | bit 6 |
+| Keyboard | bit 1 | bit 3 | bit 5 | bit 7 |
+| Light bar | bit 9 | bit 10 | bit 11 | bit 12 |
+
+Examples tested: all on `5D BD 01 FF 1E 00 00`, keyboard only `5D BD 01 AA 00 00 00`,
+keyboard + logo `FF 00 00 00`, keyboard + light bar `AA 1E 00 00`, light bar + logo `55 1E 00 00`.
+The small display on the lid (ASUS AniMe/Slash) is a separate device and not handled here.
+
+## ROG Licht (menu bar app)
+
+Stand-in for Armoury Crate's lighting page: profile, effect, colours, speed, direction,
+brightness and the three zones (awake, and optionally boot/sleep/shutdown). The app writes
+`lighting.json`; the agent applies it on a distributed notification, so only the agent needs
+Input Monitoring. Fn+F4 / Fn+F2 / Fn+F3 update the same state and the app follows.
 
 ## Display brightness
 

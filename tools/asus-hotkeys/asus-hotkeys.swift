@@ -1,12 +1,14 @@
-// ASUS-Hotkeys fuer den ROG Strix SCAR 18 G835LXG unter macOS.
+// ASUS-Hotkeys fuer den ROG Strix SCAR 18 G835LXG unter macOS (Version 3).
 // Liest die Fn-Tasten vom ASUS-Kanal der N-KEY-Tastatur (Report 0x5A):
 //   Fn+M4 (0xAE)  Leistungsprofil Leise -> Leistung -> Turbo (ASUSG835WMI-Kext)
-//   Fn+F2 (0xC5)  Tastaturlicht dunkler, Fn+F3 (0xC4) heller (Aura-Report, Stufe 0..3)
+//   Fn+F2 (0xC5)  Tastaturlicht dunkler, Fn+F3 (0xC4) heller (Stufe 0..3)
 //   Fn+F7 (0x10)  Display dunkler, Fn+F8 (0x20) heller (Software-Abdunkelung per Farbkurve,
 //                 weil der NVIDIA-Treiber fuer das interne Panel keine Helligkeit anbietet)
-//   Fn+F4 (0xB3)  naechster Aura-Lichteffekt
-// Tastenbelegung und Lichteffekte stehen in ~/Library/Application Support/ASUSHotkeys/config.json
-// (wird bei jedem Tastendruck neu gelesen, Aenderungen brauchen keinen Neustart).
+//   Fn+F4 (0xB3)  naechster Aura-Effekt
+// Beleuchtung (Farbe, Effekt, Zonen) steht in lighting.json und wird von der App "ROG Licht"
+// geaendert; die App schickt dann die Mitteilung de.codex.asushotkeys.lighting.
+// Tastenbelegung: ~/Library/Application Support/ASUSHotkeys/config.json.
+// Bauen: swiftc -O asus-hotkeys.swift Lighting.swift -o asus-hotkeys
 import AppKit
 import CoreGraphics
 import Foundation
@@ -23,10 +25,9 @@ func notify(_ title: String, _ text: String) {
     try? p.run()
 }
 
-// MARK: Tastaturbeleuchtung (N-KEY, Feature-Report 0x5A)
+// MARK: N-KEY Feature-Reports
 
 var nkey: IOHIDDevice?
-var kbdLevel = defaults.object(forKey: "kbd") as? Int ?? 2
 
 func sendFeature(_ bytes: [UInt8]) -> IOReturn {
     guard let dev = nkey else { return kIOReturnNotOpen }
@@ -35,73 +36,71 @@ func sendFeature(_ bytes: [UInt8]) -> IOReturn {
     return IOHIDDeviceSetReport(dev, kIOHIDReportTypeFeature, CFIndex(buf[0]), buf, buf.count)
 }
 
-func applyKeyboard() {
+// MARK: Beleuchtung
+
+var lighting: LightingState = {
+    if let s = loadLighting() { return s }
+    var s = LightingState()                     // Erststart: bisherige Helligkeit uebernehmen
+    s.brightness = defaults.object(forKey: "kbd") as? Int ?? 3
+    saveLighting(s)
+    return s
+}()
+
+func applyBrightness() {
+    let r = sendFeature([0x5a, 0xba, 0xc5, 0xc4, UInt8(max(0, min(3, lighting.brightness)))])
+    log("Tastaturlicht Stufe \(lighting.brightness) (\(String(format: "0x%x", r)))")
+}
+
+func applyLighting() {
     let hello: [UInt8] = [0x5a] + Array("ASUS Tech.Inc.".utf8) + [0]
-    let r1 = sendFeature(hello)
-    let r2 = sendFeature([0x5a, 0xba, 0xc5, 0xc4, UInt8(kbdLevel)])
-    log("Tastaturlicht Stufe \(kbdLevel) (\(String(format: "0x%x/0x%x", r1, r2)))")
+    var codes: [String] = []
+    for r in [hello, lighting.powerReport(), lighting.effectReport(), [0x5d, 0xb5], [0x5d, 0xb4]] {
+        codes.append(String(format: "0x%x", sendFeature(r)))
+    }
+    applyBrightness()
+    log("Beleuchtung \(lighting.modeName) \(lighting.color) Zonen K\(lighting.keyboard.awake ? 1 : 0) " +
+        "L\(lighting.lightbar.awake ? 1 : 0) O\(lighting.logo.awake ? 1 : 0): \(codes.joined(separator: " "))")
+}
+
+func changed() {
+    saveLighting(lighting)
+    DistributedNotificationCenter.default().postNotificationName(lightingChangedNotification, object: nil,
+                                                                 userInfo: nil, deliverImmediately: true)
 }
 
 func changeKeyboard(_ delta: Int) {
-    kbdLevel = max(0, min(3, kbdLevel + delta))
-    defaults.set(kbdLevel, forKey: "kbd")
-    applyKeyboard()
-}
-
-// MARK: Einstellungsdatei
-
-let configURL = FileManager.default.homeDirectoryForCurrentUser
-    .appendingPathComponent("Library/Application Support/ASUSHotkeys/config.json")
-let defaultConfig = """
-{
-  "keys": { "ae": "profile", "c4": "kbd+", "c5": "kbd-", "20": "dim+", "10": "dim-", "b3": "aura" },
-  "auraModes": [
-    { "name": "Statisch weiss", "reports": ["5d b3 00 00 ff ff ff eb 00 00"] },
-    { "name": "Atmen",          "reports": ["5d b3 00 01 ff ff ff eb 00 00 00 00 00"] },
-    { "name": "Farbwechsel",    "reports": ["5d b3 00 02 ff 00 00 eb 00 00"] },
-    { "name": "Regenbogen",     "reports": ["5d b3 00 03 ff 00 00 eb 00 00"] },
-    { "name": "Statisch rot",   "reports": ["5d b3 00 00 ff 00 00 eb 00 00"] }
-  ],
-  "auraApply": ["5d b5", "5d b4"]
-}
-"""
-
-struct AuraMode: Codable { var name: String; var reports: [String] }
-struct Config: Codable { var keys: [String: String]; var auraModes: [AuraMode]; var auraApply: [String] }
-
-func loadConfig() -> Config {
-    if !FileManager.default.fileExists(atPath: configURL.path) {
-        try? defaultConfig.data(using: .utf8)!.write(to: configURL)
-    }
-    if let data = try? Data(contentsOf: configURL), let c = try? JSONDecoder().decode(Config.self, from: data) {
-        return c
-    }
-    log("config.json fehlerhaft, verwende Standard")
-    return try! JSONDecoder().decode(Config.self, from: defaultConfig.data(using: .utf8)!)
-}
-
-func hexBytes(_ s: String) -> [UInt8] { s.split(separator: " ").compactMap { UInt8($0, radix: 16) } }
-
-// MARK: Aura-Lichteffekte
-
-var auraIndex = defaults.object(forKey: "aura") as? Int ?? -1   // -1: nicht gesetzt, Tastatur behaelt ihren Effekt
-
-func applyAura(_ config: Config) {
-    guard auraIndex >= 0, !config.auraModes.isEmpty else { return }
-    let mode = config.auraModes[auraIndex % config.auraModes.count]
-    var codes: [String] = []
-    for r in mode.reports + config.auraApply { codes.append(String(format: "0x%x", sendFeature(hexBytes(r)))) }
-    _ = sendFeature([0x5a, 0xba, 0xc5, 0xc4, UInt8(kbdLevel)])
-    log("Aura \(mode.name): \(codes.joined(separator: " "))")
+    lighting.brightness = max(0, min(3, lighting.brightness + delta))
+    applyBrightness()
+    changed()
 }
 
 func nextAura() {
-    let config = loadConfig()
-    guard !config.auraModes.isEmpty else { return }
-    auraIndex = (auraIndex + 1) % config.auraModes.count
-    defaults.set(auraIndex, forKey: "aura")
-    applyAura(config)
-    notify("Tastaturbeleuchtung", config.auraModes[auraIndex].name)
+    let ids = auraModes.map(\.id)
+    let i = ids.firstIndex(of: lighting.mode) ?? -1
+    lighting.mode = ids[(i + 1) % ids.count]
+    applyLighting()
+    changed()
+    notify("Tastaturbeleuchtung", lighting.modeName)
+}
+
+// MARK: Tastenbelegung
+
+let configURL = FileManager.default.homeDirectoryForCurrentUser
+    .appendingPathComponent("Library/Application Support/ASUSHotkeys/config.json")
+let defaultKeys = ["ae": "profile", "c4": "kbd+", "c5": "kbd-", "20": "dim+", "10": "dim-", "b3": "aura"]
+
+func loadKeys() -> [String: String] {
+    if !FileManager.default.fileExists(atPath: configURL.path),
+       let data = try? JSONSerialization.data(withJSONObject: ["keys": defaultKeys], options: .prettyPrinted) {
+        try? data.write(to: configURL)
+    }
+    if let data = try? Data(contentsOf: configURL),
+       let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+       let keys = obj["keys"] as? [String: String] {
+        return keys
+    }
+    log("config.json fehlerhaft, verwende Standard")
+    return defaultKeys
 }
 
 // MARK: Leistungsprofil (ASUSG835WMI-Kext)
@@ -132,6 +131,7 @@ func cycleProfile() {
     let now = currentProfile() ?? "?"
     log("Profil \(cur) -> \(next): \(String(format: "0x%x", r)), gelesen \(now)")
     notify("Leistungsprofil", r == KERN_SUCCESS ? (profileNames[now] ?? now) : "Umschalten fehlgeschlagen")
+    changed()
 }
 
 // MARK: Displayhelligkeit (Software-Abdunkelung)
@@ -166,8 +166,7 @@ var lastCode: UInt8 = 0
 let reportBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: 128)
 
 func handle(_ code: UInt8) {
-    let action = loadConfig().keys[String(format: "%02x", code)]
-    switch action {
+    switch loadKeys()[String(format: "%02x", code)] {
     case "profile": cycleProfile()
     case "kbd+": changeKeyboard(+1)
     case "kbd-": changeKeyboard(-1)
@@ -190,7 +189,7 @@ IOHIDManagerRegisterDeviceMatchingCallback(manager, { _, _, _, device in
         lastCode = code
     }, nil)
     log("N-KEY verbunden")
-    DispatchQueue.main.asyncAfter(deadline: .now() + 1) { applyKeyboard(); applyAura(loadConfig()) }
+    DispatchQueue.main.asyncAfter(deadline: .now() + 1) { applyLighting() }
 }, nil)
 IOHIDManagerRegisterDeviceRemovalCallback(manager, { _, _, _, _ in nkey = nil }, nil)
 IOHIDManagerScheduleWithRunLoop(manager, CFRunLoopGetMain(), CFRunLoopMode.defaultMode.rawValue)
@@ -200,9 +199,14 @@ if openResult != kIOReturnSuccess {
     notify("ASUS-Hotkeys", "Bitte unter Datenschutz & Sicherheit > Eingabeueberwachung erlauben")
 }
 
+// Die App "ROG Licht" hat lighting.json geaendert.
+DistributedNotificationCenter.default().addObserver(forName: lightingNotification, object: nil, queue: .main) { _ in
+    if let s = loadLighting() { lighting = s; applyLighting() }
+}
+
 // Nach dem Aufwachen und bei Display-Aenderungen Zustand wiederherstellen.
 NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.didWakeNotification, object: nil, queue: .main) { _ in
-    DispatchQueue.main.asyncAfter(deadline: .now() + 2) { applyKeyboard(); applyAura(loadConfig()); applyDim() }
+    DispatchQueue.main.asyncAfter(deadline: .now() + 2) { applyLighting(); applyDim() }
 }
 CGDisplayRegisterReconfigurationCallback({ _, flags, _ in
     if !flags.contains(.beginConfigurationFlag) { DispatchQueue.main.async { applyDim() } }
@@ -210,5 +214,5 @@ CGDisplayRegisterReconfigurationCallback({ _, flags, _ in
 // Manche Systemdienste setzen die Farbkurve zurueck; regelmaessig nachziehen.
 Timer.scheduledTimer(withTimeInterval: 15, repeats: true) { _ in if dimLevel < 10 { applyDim() } }
 applyDim()
-log("ASUS-Hotkeys gestartet, Profil \(currentProfile() ?? "unbekannt")")
+log("ASUS-Hotkeys 3 gestartet, Profil \(currentProfile() ?? "unbekannt")")
 CFRunLoopRun()

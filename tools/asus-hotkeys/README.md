@@ -1,12 +1,21 @@
-# asus-hotkeys
+# asus-hotkeys and ROG Licht
 
-User agent for the ASUS Fn keys on the G835LXG (no kext needed except
-[ASUSG835WMI](../../drivers/ASUSG835WMI) for Fn+M4). Details: [docs/asus-hotkeys.md](../../docs/asus-hotkeys.md).
+Two small programs for the ASUS ROG Strix SCAR 18 G835LXG (details: [docs/asus-hotkeys.md](../../docs/asus-hotkeys.md)):
+
+- **asus-hotkeys** – background agent (LaunchAgent). Handles the Fn keys and is the only process
+  that talks to the N-KEY keyboard (needs **Input Monitoring**).
+- **ROG Licht** – menu bar app, the macOS stand-in for Armoury Crate's lighting page:
+  performance profile (Quiet / Balanced / Turbo), Aura effect, colour(s), speed, direction,
+  brightness, and the lighting zones **keyboard, light bar, logo**, each separately for
+  awake / boot / sleep / shutdown. It writes `lighting.json` and asks the agent (distributed
+  notification `de.codex.asushotkeys.lighting`) to apply it, so the app itself needs no permission.
 
 ```bash
 ./install.sh
 ```
 
 Then allow **asus-hotkeys** in System Settings → Privacy & Security → Input Monitoring.
-Key mapping and Aura effects: `~/Library/Application Support/ASUSHotkeys/config.json`
-(actions `profile`, `kbd+`, `kbd-`, `dim+`, `dim-`, `aura`; re-read on every key press).
+
+Files in `~/Library/Application Support/ASUSHotkeys/`:
+- `lighting.json` – lighting state (shared by app and agent)
+- `config.json` – key mapping (actions `profile`, `kbd+`, `kbd-`, `dim+`, `dim-`, `aura`)

@@ -42,6 +42,7 @@ This is a hobby project on one laptop. Everything here was tested on exactly one
 | Boot in Quiet profile (like Windows) | works | ASUSG835WMI sets Quiet at start |
 | Fn+F2 / Fn+F3 keyboard backlight | **works** | asus-hotkeys (N-KEY feature report) |
 | Fn+F4 Aura effects | **works** | asus-hotkeys |
+| Lighting app (colours, 12 effects, zones keyboard / light bar / logo) | **works** | [ROG Licht](tools/asus-hotkeys) menu bar app (this repo) |
 | Fn+F7 / Fn+F8 display brightness | software dimming only | the NVIDIA driver exposes no backlight, see below |
 | Sleep / wake | **does not work** – the laptop reboots on wake, see below | sleep disabled with `pmset` |
 | Internal microphone | works (tested) | VoodooHDA |
@@ -75,7 +76,7 @@ This is a hobby project on one laptop. Everything here was tested on exactly one
 | [`drivers/TAS2781DirectI2C/`](drivers/TAS2781DirectI2C) | Speaker amplifier driver (source, table generator, build script) |
 | [`drivers/ASUSG835WMI/`](drivers/ASUSG835WMI) | ASUS-WMI kext for the performance profiles |
 | [`audio/VoodooHDA/`](audio/VoodooHDA) | Build script for the VoodooHDA used here (WTLAudio based, with the SCAR edits) |
-| [`tools/asus-hotkeys/`](tools/asus-hotkeys) | User agent for the Fn keys and Aura effects, config file |
+| [`tools/asus-hotkeys/`](tools/asus-hotkeys) | Fn-key agent and the **ROG Licht** menu bar app (lighting, zones, performance profile) |
 | [`tools/diagnostics/`](tools/diagnostics) | HID logger, Aura report sender, audio device helper, ACPI dumper |
 | [`docs/`](docs) | Findings: [audio](docs/audio-tas2781.md), [ASUS keys](docs/asus-hotkeys.md), [display/NVIDIA](docs/display-nvidia.md), [OpenCore/boot](docs/opencore.md), [hardware](docs/hardware.md) |
 | [`install-kexts.sh`](install-kexts.sh) | Installs kexts to `/Library/Extensions` and rebuilds the Auxiliary Kernel Collection with backup and check |
@@ -98,7 +99,7 @@ its manager app **1401**.
    sudo ./install-kexts.sh audio/VoodooHDA/out/VoodooHDA.kext drivers/TAS2781DirectI2C/build/TAS2781DirectI2C.kext drivers/ASUSG835WMI/build/ASUSG835WMI.kext
    ```
    Approve in System Settings → Privacy & Security, restart.
-7. **Fn keys**: `tools/asus-hotkeys/install.sh`, allow Input Monitoring.
+7. **Fn keys and ROG Licht**: `tools/asus-hotkeys/install.sh`, allow Input Monitoring.
 
 Details for each step are in the README of each folder and in [`docs/`](docs).
 

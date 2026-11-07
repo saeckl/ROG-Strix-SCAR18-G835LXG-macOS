@@ -15,6 +15,7 @@ OpenCore-EFI, Treiber und Befunde für **macOS 26 Tahoe** auf dem ASUS ROG Strix
 - Webcam (FaceTime mit Live-Bild; Photo Booth macht Fotos, zeigt aber kein Live-Bild).
 - **Fn+M4** Leistungsprofil Leise/Leistung/Turbo, Start im Leise-Profil wie unter Windows.
 - **Fn+F2/F3** Tastaturlicht, **Fn+F4** Aura-Effekte.
+- Menüleisten-App **ROG Licht**: Farben, 12 Effekte, Helligkeit, Zonen Tastatur/Lichtleiste/Logo und Leistungsprofil – wie die Beleuchtungsseite von Armoury Crate.
 - **Fn+F7/F8** Display-Helligkeit, aber nur per Software-Abdunkelung.
 
 ## Was nicht geht
