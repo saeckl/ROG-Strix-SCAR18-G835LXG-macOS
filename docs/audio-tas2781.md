@@ -86,7 +86,8 @@ calibration. See [drivers/TAS2781DirectI2C/README.md](../drivers/TAS2781DirectI2
 
 ## Open points
 
-- Balance and system-sound behaviour after v0.5 not fully confirmed.
+- Confirmed with 0.5.2: left/right correct, equal loudness, the balance slider follows, and system
+  sounds no longer break playback.
 - Internal microphone works (VoodooHDA).
 - VoodooI2C also attaches to the I²C0 controller. Concurrent access from VoodooI2C and
   TAS2781DirectI2C is not synchronised; it has caused no problems so far, but it is not proven safe.
