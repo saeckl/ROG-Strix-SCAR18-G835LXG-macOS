@@ -1,5 +1,6 @@
 #include <IOKit/IOService.h>
 #include <IOKit/IOLib.h>
+#include <IOKit/IODeviceTreeSupport.h>
 #include <IOKit/IOUserClient.h>
 #include <IOKit/acpi/IOACPIPlatformDevice.h>
 #include <kern/task.h>
@@ -71,9 +72,26 @@ bool ASUSG835WMI::start(IOService *provider)
     if (!acpi || !lock || !IOService::start(provider))
         return false;
     // Start in "quiet" (Leise), like Armoury Crate's silent default on this machine.
+    // The NVRAM variable asus-start-profile (quiet|balanced|performance|keep) overrides it:
+    //   sudo nvram asus-start-profile=performance     ("keep" leaves the firmware's profile alone)
+    UInt32 start = 2;
+    if (auto opts = IORegistryEntry::fromPath("/options", gIODTPlane)) {
+        char want[16] = {};
+        OSObject *v = opts->copyProperty("asus-start-profile");
+        if (auto d = OSDynamicCast(OSData, v))
+            memcpy(want, d->getBytesNoCopy(), d->getLength() < sizeof(want) - 1 ? d->getLength() : sizeof(want) - 1);
+        else if (auto s = OSDynamicCast(OSString, v))
+            strlcpy(want, s->getCStringNoCopy(), sizeof(want));
+        OSSafeReleaseNULL(v);
+        opts->release();
+        if (!strcmp(want, "balanced")) start = 0;
+        else if (!strcmp(want, "performance")) start = 1;
+        else if (!strcmp(want, "keep")) start = 0xff;
+        if (want[0]) IOLog("ASUSG835WMI: asus-start-profile=%s\n", want);
+    }
     UInt32 res = 0;
-    if (call(kDEVS, kThermalPolicy, 2, &res) && res == 1)
-        current = 2;
+    if (start != 0xff && call(kDEVS, kThermalPolicy, start, &res) && res == 1)
+        current = (int)start;
     publishProfile();
     registerService();
     return true;

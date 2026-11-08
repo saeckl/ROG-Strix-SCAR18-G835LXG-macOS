@@ -2,7 +2,7 @@
 # Builds ASUSG835WMI.kext and the wmictl test tool. Needs the Xcode Command Line Tools.
 set -euo pipefail
 cd "$(dirname "$0")"
-VERSION=0.1.3
+VERSION=0.1.4
 mkdir -p build
 sdk=$(xcrun --sdk macosx --show-sdk-path)
 res=$(clang -print-resource-dir)

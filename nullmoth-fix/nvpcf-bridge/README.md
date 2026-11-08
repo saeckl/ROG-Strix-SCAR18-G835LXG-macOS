@@ -14,7 +14,10 @@ MacKernelSDK in `sdk/`), inject after Lilu in OpenCore.
   - sub-function 7 is where the driver reports its rated TGP back (`AVRT`, 95 W on Windows);
   - every profile change sends `Notify(\_SB.NPCF, 0xC0)`, which must reach RM (`rm_acpi_nvpcf_notify`);
   - the platform-power controller needs CPU power telemetry, which NVIDIA's Windows platform services provide.
-- So a working fix needs NVPCF support inside NullMoth's NVRM (notify handler included), not a shim.
+- Second test: booted directly in Turbo (ASUS kext 0.1.4, `nvram asus-start-profile=performance`) so RM reads
+  the Turbo tables at GPU init (120 W platform budget, TGP offset) without needing the notify: still ~40 FPS.
+- So a working fix needs NVPCF support inside NullMoth's NVRM, most likely together with the platform power
+  telemetry that `nvidia-powerd` provides on Linux/Windows, not a shim.
 
 Side finding: writing the ASUS-WMI TGP / Dynamic Boost IDs changes EC registers (`MTGP`, `MGDB`) that survive a
 restart; set them back to 0 (`devs=00120098.0`, `devs=001200C0.0`) if you experiment.

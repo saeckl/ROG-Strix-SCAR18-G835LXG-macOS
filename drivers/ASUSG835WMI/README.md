@@ -16,4 +16,11 @@ build/wmictl profile=balanced
 build/wmictl 'profile?'
 ```
 
+Start profile: Quiet by default. Override with an NVRAM variable (0.1.4):
+
+```bash
+sudo nvram asus-start-profile=performance   # quiet | balanced | performance | keep
+sudo nvram -d asus-start-profile             # back to Quiet
+```
+
 Fn+M4 is handled by [tools/asus-hotkeys](../../tools/asus-hotkeys), which uses this kext.
