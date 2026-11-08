@@ -24,6 +24,15 @@ This is a hobby project on one laptop. Everything here was tested on exactly one
 | OpenCore | 1.0.9 DEBUG |
 | SMBIOS | MacBookPro16,2 |
 
+## Benchmark: macOS vs. Windows vs. Ubuntu
+
+Same laptop, ASUS profile Turbo, 8 Nov 2026. CPU and RAM run at full speed on macOS; the GPU reaches
+about 80 % of Windows Vulkan with [nvpowerd-macos](tools/nvpowerd-macos) (Metal and Vulkan/OpenCL are
+different APIs). Method, raw numbers and the public Geekbench results:
+[tools/diagnostics/scarbench](tools/diagnostics/scarbench).
+
+![Benchmark comparison macOS 26 / Windows 11 / Ubuntu 26.04 on the SCAR 18](docs/img/benchmark-os-comparison.svg)
+
 ## Status
 
 | Function | Status | How |
