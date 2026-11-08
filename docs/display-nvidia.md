@@ -4,14 +4,14 @@
   **RTX 5090 Laptop GPU** when the BIOS MUX is set to dGPU. The Intel iGPU is disabled in the EFI
   (`disable-gpu`).
 - macOS has no driver for RTX 50. The **[NullMoth NVIDIA driver](https://github.com/nullmoth/nvidia-macos-driver)**
-  (tested 2.7.2) makes it work: NVIDIA's open kernel modules + firmware in the kernel, Metal
+  (tested 2.7.2 – 2.8.1; current 2.8.1 = open RM/GSP 620.70.06) makes it work: NVIDIA's open kernel modules + firmware in the kernel, Metal
   translated to Vulkan (NVK, "NVMTL over NVK"). Installed and updated with NullMoth's app
   **1401**, which also adds the OpenCore entries it needs (`IONDRVSupport` block,
   `NullMothSafe.efi`, boot-args).
 - 1401 → **Send logs to NullMoth** uploads diagnostics (names and serials removed). For a game
   problem also attach the game's own log on NullMoth's website.
 
-## Known limits (2.7.2)
+## Known limits (2.7.2 – 2.8.1)
 
 - **No backlight control.** NVRMFB does not register a backlight for the panel, the panel's
   `_BCM` (`\_SB.PC00.RP01.PXSX.EDP1`) is empty, ASUS-WMI has no panel brightness.

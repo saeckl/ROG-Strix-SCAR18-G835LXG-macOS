@@ -38,7 +38,7 @@ different APIs). Method, raw numbers and the public Geekbench results:
 | Function | Status | How |
 | --- | --- | --- |
 | Boot, multi-boot macOS / Windows / Ubuntu | **works** (tested) | OpenCore 1.0.9, text picker showing only macOS, Windows, Linux; 10 s timeout → macOS |
-| NVIDIA RTX 5090, internal panel, Metal | works with limitations | [NullMoth NVIDIA driver](https://github.com/nullmoth/nvidia-macos-driver) 2.7.2 |
+| NVIDIA RTX 5090, internal panel, Metal | works with limitations | [NullMoth NVIDIA driver](https://github.com/nullmoth/nvidia-macos-driver) 2.8.1 (open RM 620.70.06) |
 | Internal speakers (left + right, balance slider) | **works** | VoodooHDA + [TAS2781DirectI2C](drivers/TAS2781DirectI2C) (this repo) |
 | Headphone jack | works; plugging in mutes the speakers | VoodooHDA + jack sense in TAS2781DirectI2C 0.5.2 |
 | Volume, mute | works | macOS volume → DAC gain |

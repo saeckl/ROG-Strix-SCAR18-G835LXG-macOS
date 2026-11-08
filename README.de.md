@@ -8,7 +8,7 @@ OpenCore-EFI, Treiber und Befunde für **macOS 26 Tahoe** auf dem ASUS ROG Strix
 ## Was funktioniert
 
 - Start von macOS, Windows und Ubuntu über OpenCore 1.0.9 (Textmenü, nach 10 s macOS).
-- RTX 5090 und internes Display mit dem [NullMoth-NVIDIA-Treiber](https://github.com/nullmoth/nvidia-macos-driver).
+- RTX 5090 und internes Display mit dem [NullMoth-NVIDIA-Treiber](https://github.com/nullmoth/nvidia-macos-driver) 2.8.1 (open RM 620.70.06).
 - **Interne Lautsprecher** links und rechts: VoodooHDA + eigener Treiber TAS2781DirectI2C.
 - Kopfhörer (Einstecken schaltet die Lautsprecher ab) und internes Mikrofon.
 - WLAN (BE200), Bluetooth, Ethernet, Touchpad, Akku.
@@ -21,7 +21,7 @@ OpenCore-EFI, Treiber und Befunde für **macOS 26 Tahoe** auf dem ASUS ROG Strix
 ## Was nicht geht
 
 - Echte Display-Helligkeit (der NVIDIA-Treiber bietet keine Hintergrundbeleuchtung an).
-- Manche Metal-Spiele, z. B. World of Warcraft (schwarzer Bildschirm, an NullMoth gemeldet).
+- World of Warcraft läuft seit NullMoth 2.8, aber nur mit ca. 40 FPS (Windows: 112–154 FPS); der Engpass ist der Metal→Vulkan-Weg.
 
 ## Ruhezustand
 
