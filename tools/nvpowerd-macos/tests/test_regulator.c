@@ -44,6 +44,20 @@ int main(int argc,char **argv){
         if(issue==5)sample.seq=0;
         CHECK(!nv_regulate(&r,&p,&sample,175000,175000,true,&d) && d.target_mw==95000 && !r.primed);
     }
+    /* Grace: a primed controller holds its last target for 10 missing ticks, then 95 W. */
+    r=(NvRegulator){0};sample=(NvCpuSample){true,20000,0,100,500};
+    CHECK(!nv_regulate(&r,&p,&sample,175000,150000,true,&d));sample.seq++;
+    CHECK(!nv_regulate(&r,&p,&sample,175000,150000,true,&d));uint32_t held=d.target_mw;CHECK(held>=150000);
+    {NvCpuSample gone={0};
+     for(unsigned k=0;k<CPU_GRACE_TICKS;k++){CHECK(!nv_regulate(&r,&p,&gone,175000,held,true,&d) && d.target_mw==held && d.mode==NV_CPU_MISSING && r.primed);}
+     CHECK(!nv_regulate(&r,&p,&gone,175000,held,true,&d) && d.target_mw==95000 && !r.primed);
+     /* a fresh sample resets the grace counter */
+     r=(NvRegulator){0};CHECK(!nv_regulate(&r,&p,&sample,175000,150000,true,&d));sample.seq++;CHECK(!nv_regulate(&r,&p,&sample,175000,150000,true,&d));
+     for(unsigned k=0;k<5;k++)CHECK(!nv_regulate(&r,&p,&gone,175000,held,true,&d) && d.target_mw==r.hold_mw);
+     sample.seq++;CHECK(!nv_regulate(&r,&p,&sample,175000,held,true,&d) && r.missing==0);
+     /* holding never exceeds the profile cap after a profile drop */
+     NvPowerProfile low=p;low.max_mw=150000;CHECK(!nv_regulate(&r,&p,&gone,175000,held,true,&d));
+     CHECK(!nv_regulate(&r,&low,&gone,175000,held,true,&d) && d.target_mw<=150000);}
     sample=(NvCpuSample){true,10000,0,100,10};CHECK(!nv_regulate(&r,&p,&sample,175000,175000,false,&d) && d.target_mw==95000);
     CHECK(nv_regulate(&r,&p,&sample,200000,0,true,&d)!=0);
     uint8_t bad[NVPCF_SIZE];memcpy(bad,dyn,sizeof(bad));nv_put32(bad,24,125000);

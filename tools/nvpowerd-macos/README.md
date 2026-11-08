@@ -54,7 +54,11 @@ layouts from read-only dumps on this laptop; the setter layout from the GSP hand
 Also: the NVPCF dynamic request (sub-function 3) must carry the static config as input – RM
 compares the BIOS reply's table version with the request (`NV_ERR_INVALID_DATA` otherwise).
 macOS `powermetrics` alternates between ~100 ms and ~200 ms samples, so samples up to 250 ms
-(age 350 ms) are accepted.
+(age 350 ms) are accepted; a running Turbo controller holds its last target for up to 1 s
+of missing samples (never higher), then falls back to 95 W.
+
+Checked again with NullMoth 2.8.1 (version bump only: identical kext UUIDs, RM 620.70.06, same GSP
+tables): service off 1115 MHz (Balanced) → on 1454 MHz (Balanced) / 1563 MHz (Turbo).
 
 Only `--rm-version 595.99.02` and `620.70.06` are accepted. After a NullMoth update the service
 refuses to start (GPU stays at 95 W) until the layouts have been checked again.

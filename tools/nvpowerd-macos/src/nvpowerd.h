@@ -45,7 +45,8 @@ typedef struct {uint32_t index,hardware_min_mw,base_mw,max_mw,reference_mw;} NvP
 typedef struct {bool valid;uint32_t mw,age_ms,interval_ms;uint64_t seq;} NvCpuSample;
 typedef struct {uint32_t base_mw,total_mw,min_mw,max_mw;bool boost;} NvPowerProfile;
 enum {NV_FIXED,NV_CPU_MISSING,NV_WARMUP,NV_FEEDBACK,NV_BUDGET_EXHAUSTED};
-typedef struct {bool primed;uint32_t filtered_mw,profile_cap;uint64_t seq;int64_t delta_sum;} NvRegulator;
+typedef struct {bool primed;uint32_t filtered_mw,profile_cap;uint64_t seq;int64_t delta_sum;uint32_t missing,hold_mw;} NvRegulator;
+#define CPU_GRACE_TICKS 10u /* 100 ms ticks a primed controller may hold its last target without a CPU sample */
 typedef struct {uint32_t target_mw,filtered_mw;unsigned mode;} NvDecision;
 int nv_profile(const uint8_t *,size_t,NvPowerProfile *,char *,size_t);
 int nv_regulate(NvRegulator *,const NvPowerProfile *,const NvCpuSample *,uint32_t,uint32_t,bool,NvDecision *);

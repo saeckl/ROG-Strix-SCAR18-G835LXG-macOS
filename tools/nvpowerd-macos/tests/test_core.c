@@ -96,7 +96,9 @@ static void check_failures(void){
  CHECK(nv_tick(&fs,175000,true)==0 && feedback.last==150000);
  CHECK(nv_tick(&fs,175000,true)==0 && feedback.last==175000);
  feedback.cpu_mw=100000;CHECK(nv_tick(&fs,175000,true)==0 && feedback.last==170000);
- feedback.fail_cpu=true;CHECK(nv_tick(&fs,175000,true)==0 && feedback.last==95000);
+ feedback.fail_cpu=true;
+ for(unsigned k=0;k<CPU_GRACE_TICKS;k++)CHECK(nv_tick(&fs,175000,true)==0 && feedback.last==170000); /* grace hold */
+ CHECK(nv_tick(&fs,175000,true)==0 && feedback.last==95000);
  feedback.fail_cpu=false;feedback.cpu_mw=10000;
  CHECK(nv_tick(&fs,175000,true)==0 && feedback.last==150000);
  CHECK(nv_tick(&fs,175000,true)==0 && feedback.last==175000);

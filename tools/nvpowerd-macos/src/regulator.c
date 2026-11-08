@@ -30,17 +30,25 @@ int nv_regulate(NvRegulator *r,const NvPowerProfile *p,const NvCpuSample *cpu,
        cpu->age_ms>350 || cpu->interval_ms<75 || cpu->interval_ms>250){
         /* macOS powermetrics alternates between ~100 and ~200 ms intervals
            (measured on SCAR18, idle and GPU load); both are package averages. */
+        /* powermetrics occasionally skips a sample under CPU load. A primed
+           controller holds its last verified target for at most 1 s (never
+           above it), then falls back to the base limit. */
+        if(r->primed && r->hold_mw && r->missing<CPU_GRACE_TICKS){
+            r->missing++;d->mode=NV_CPU_MISSING;d->filtered_mw=r->filtered_mw;
+            d->target_mw=minimum(r->hold_mw,minimum(request,p->max_mw));return 0;
+        }
         memset(r,0,sizeof(*r));d->mode=NV_CPU_MISSING;d->target_mw=BASE_MW;return 0;
     }
+    r->missing=0;
     /* With no CPU actuator, do not claim to satisfy an impossible budget. */
     if(cpu->mw>p->total_mw-p->min_mw){
         memset(r,0,sizeof(*r));d->mode=NV_BUDGET_EXHAUSTED;d->target_mw=BASE_MW;return 0;
     }
     uint32_t ceiling=minimum(request,minimum(p->max_mw,((p->total_mw-cpu->mw)/500)*500));
     if(!r->primed || r->profile_cap!=p->max_mw){
-        *r=(NvRegulator){true,cpu->mw,p->max_mw,cpu->seq,0};
+        *r=(NvRegulator){true,cpu->mw,p->max_mw,cpu->seq,0,0,0};
         d->mode=NV_WARMUP;d->filtered_mw=cpu->mw;
-        d->target_mw=minimum(d->target_mw,ceiling);return 0;
+        d->target_mw=minimum(d->target_mw,ceiling);r->hold_mw=d->target_mw;return 0;
     }
     d->filtered_mw=r->filtered_mw;d->mode=NV_FEEDBACK;
     /* The same sample must not advance the EMWA or the setter accumulator. */
@@ -63,5 +71,5 @@ int nv_regulate(NvRegulator *r,const NvPowerProfile *p,const NvCpuSample *cpu,
     if(target>previous && r->delta_sum<1000)target=previous;
     if(target<previous && previous<=ceiling && r->delta_sum>-1000)target=previous;
     if(target!=previous)r->delta_sum=0;
-    d->target_mw=minimum(target,ceiling);d->filtered_mw=r->filtered_mw;return 0;
+    d->target_mw=minimum(target,ceiling);d->filtered_mw=r->filtered_mw;r->hold_mw=d->target_mw;return 0;
 }
