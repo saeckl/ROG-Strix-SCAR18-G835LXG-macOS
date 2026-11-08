@@ -67,3 +67,24 @@ ASUS-WMI test on macOS 2.8, Turbo profile, then the Windows Turbo values set thr
 
 No effect: the firmware stores the values (EC `MTGP`/`MGDB`, NPCF fields) but nothing on macOS hands them
 to the GPU. That needs the NVPCF `_DSM` path in NVRM.
+
+## Ubuntu reference (8 Nov 2026): same open RM, with and without nvidia-powerd
+
+Ubuntu 26.04.1, kernel 7.0, NVIDIA open kernel module 595.99.02, nvidia-powerd 2.0; glmark2 terrain,
+fullscreen 3840x2400, 94–97 % GPU load, 30 s per run. Throttle reason in every sample: SW Power Cap.
+
+| Profile | powerd on: limit / clock / power | powerd off: limit / clock / power |
+| --- | --- | --- |
+| Quiet | 95 W / 1525 MHz / 94 W | 95 W / 1499 MHz / 94 W |
+| Balanced | 150 W / 2041 MHz / 145 W | 95 W / 1498 MHz / 94 W |
+| Turbo | 175 W / 2129 MHz / 163 W | 95 W / 1504 MHz / 94 W |
+
+- The 150/175 W limits need **nvidia-powerd** (closed-source user-space daemon). Without it the GPU stays at 95 W
+  in every profile, even with NVPCF/PRH available to RM (Linux answers all _DSM calls). Linux reports
+  "Notebook Dynamic Boost: Supported"; powerd logs "Client (presumably SBIOS) has requested to disable Dynamic
+  Boost DC controller" (battery-only controller, expected).
+- So on macOS the realistic ceiling without a powerd equivalent is the 95 W base (~1.5 GHz). Forwarding the ACPI
+  calls (NVPCFBridge, with or without GPS/PRH) cannot unlock Balanced/Turbo by itself.
+- Whether macOS currently reaches even the 95 W base is unclear: my Metal benchmark estimates ~1.0–1.1 GHz, but that
+  estimate assumes perfect NAK code and may undercount. The large FPS gap (Windows Quiet at 95 W: 112 FPS, macOS:
+  ~40–46) is mostly the Metal→Vulkan/NVK path, not the power limit.
