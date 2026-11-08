@@ -1,7 +1,7 @@
 #!/bin/bash
 # Gegenstueck zu SCAR-Messung-Windows.ps1: Profile per ASUS-Kext umschalten, GPU-Dauerlast und WoW-FPS messen.
 clear
-W="/Users/maik/Documents/Codex/2026-11-06/referenced-chatgpt-conversation-this-is-an/work"; B="$W/nullmoth-fix/bin"; WMI="$W/asus-hotkeys/wmictl"
+R="$(cd "$(dirname "$0")/.." && pwd)"; B="$R/nullmoth-fix/bin"; WMI="$R/drivers/ASUSG835WMI/build/wmictl"  # build sustained.swift into nullmoth-fix/bin first
 OUT="/Volumes/LEITSTAND/SCAR-Messung-macOS-$(date +%Y%m%d-%H%M%S)"; mkdir -p "$OUT"
 LOG=/tmp/nvmtl.log
 say() { echo "$(date +%H:%M:%S) $*" | tee -a "$OUT/ablauf.txt"; }
