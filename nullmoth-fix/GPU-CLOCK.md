@@ -56,3 +56,14 @@ WoW on macOS 2.8: ~46 FPS (user reading), any profile.
 Conclusion: on macOS the GPU stays at roughly 1.0–1.1 GHz in every profile, below even Windows "Quiet"
 (1.41 GHz at 95 W). Without NVPCF the profile cannot raise the GPU power limit. This explains a
 1.3–1.9× clock gap; the remaining ~2× FPS gap is the Metal→Vulkan/NVK path.
+
+ASUS-WMI test on macOS 2.8, Turbo profile, then the Windows Turbo values set through `DEVS`
+(`0x00120098` = 55, `0x001200C0` = 25; both accepted with result 1):
+
+| | Sustained | Approx. clock |
+| --- | --- | --- |
+| before | 23.4 TFLOPS | ~1115 MHz |
+| after +55 W / +25 W | 23.6 TFLOPS | ~1125 MHz |
+
+No effect: the firmware stores the values (EC `MTGP`/`MGDB`, NPCF fields) but nothing on macOS hands them
+to the GPU. That needs the NVPCF `_DSM` path in NVRM.
