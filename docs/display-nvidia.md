@@ -17,7 +17,8 @@
   `_BCM` (`\_SB.PC00.RP01.PXSX.EDP1`) is empty, ASUS-WMI has no panel brightness.
   Workaround: gamma dimming (see asus-hotkeys). Possible future options: backlight support in
   NullMoth, or hybrid mode via the Intel iGPU (not tested).
-- **World of Warcraft (Metal): black screen – fixed with a workaround.** `gx.log` showed
+- **World of Warcraft (Metal): black screen – no longer needed with NullMoth 2.8** (8 Nov 2026: WoW runs
+  without the workaround, 0 failed pipelines; all 443 cached compute kernels compile with 2.8's NVK). With 2.7.2: `gx.log` showed
   `newComputePipelineState: vkCreateComputePipelines FAILED` (Prism) and `Device context was lost`
   in a loop. Cause: NullMoth's NAK optimisation `nak_cg_predload` turns loads into `load_global_nv`
   before they are legalised, and the compiler panics (`size_B <= intrin.align()` /

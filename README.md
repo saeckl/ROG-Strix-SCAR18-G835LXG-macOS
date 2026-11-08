@@ -54,8 +54,9 @@ This is a hobby project on one laptop. Everything here was tested on exactly one
   NullMoth framebuffer does not register a backlight, `_BCM` of the panel is empty and ASUS-WMI
   has no panel brightness. Fn+F7/F8 therefore dim with a gamma curve (25–100 %); the backlight
   and power draw stay the same.
-- **World of Warcraft** needed a driver workaround (black screen, NAK compiler panic) and runs at
-  about 30–40 FPS, far below Windows. Details and a patch for NullMoth:
+- **World of Warcraft** runs since NullMoth 2.8 without a workaround (2.7.2 needed one, see below) at
+  about 43–46 FPS, far below Windows (112 FPS in Quiet): the GPU stays at ~1.1 GHz because NVPCF is not
+  answered, and the Metal→Vulkan/NVK path costs about another factor 2. Details and a patch for NullMoth:
   [docs/display-nvidia.md](docs/display-nvidia.md), [nullmoth-fix/](nullmoth-fix).
 
 - **Sleep (S3).** macOS enters sleep normally, but on wake the firmware does not resume and

@@ -1,5 +1,12 @@
 # NAK panic in World of Warcraft compute kernels (NullMoth 2.7.2, RTX 5090 Laptop / GB203)
 
+## Status
+
+Not reproducible with NullMoth 2.8 (8 Nov 2026): both kernels, including the SAFE variant, compile with
+2.8's NVK with predload on (443/443 cached kernels OK, shader cache disabled), and WoW runs without
+`NVMTL_NAK_NO_PREDLOAD=1`. The predload code itself is unchanged in 2.8, so the patch below is still a valid
+hardening, but no longer needed for WoW.
+
 ## Symptom
 
 World of Warcraft (Metal) shows a black screen; `gx.log`: `newComputePipelineState: vkCreateComputePipelines
