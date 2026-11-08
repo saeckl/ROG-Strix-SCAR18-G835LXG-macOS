@@ -40,6 +40,7 @@ This is a hobby project on one laptop. Everything here was tested on exactly one
 | Battery, sensors | works | VirtualSMC + plugins |
 | Fn+M4 performance profile (Quiet / Balanced / Turbo) | **works** | [ASUSG835WMI](drivers/ASUSG835WMI) + [asus-hotkeys](tools/asus-hotkeys) (this repo) |
 | Boot in Quiet profile (like Windows) | works | ASUSG835WMI sets Quiet at start |
+| GPU power limit per profile (95 / 150 / 175 W, as on Windows) | **works** – sustained GPU load ~1115 → ~1450 / ~1560 MHz; WoW unchanged (~40 FPS) | [nvpowerd-macos](tools/nvpowerd-macos) + [NVPCFBridge](nullmoth-fix/nvpcf-bridge) (this repo) |
 | Fn+F2 / Fn+F3 keyboard backlight | **works** | asus-hotkeys (N-KEY feature report) |
 | Fn+F4 Aura effects | **works** | asus-hotkeys |
 | Lighting app (colours, 12 effects, zones keyboard / light bar / logo) | **works** | [ROG Licht](tools/asus-hotkeys) menu bar app (this repo) |
@@ -55,8 +56,9 @@ This is a hobby project on one laptop. Everything here was tested on exactly one
   has no panel brightness. Fn+F7/F8 therefore dim with a gamma curve (25–100 %); the backlight
   and power draw stay the same.
 - **World of Warcraft** runs since NullMoth 2.8 without a workaround (2.7.2 needed one, see below) at
-  about 43–46 FPS, far below Windows (112 FPS in Quiet): the GPU stays at ~1.1 GHz because NVPCF is not
-  answered, and the Metal→Vulkan/NVK path costs about another factor 2. Details and a patch for NullMoth:
+  about 40–46 FPS, far below Windows (112 FPS in Quiet). With [nvpowerd-macos](tools/nvpowerd-macos)
+  the GPU gets the same 150/175 W limits as on Windows (+30/40 % clock under sustained load), but WoW
+  stays at ~40 FPS in every profile: the bottleneck is the Metal→Vulkan/NVK path, not GPU power. Details and a patch for NullMoth:
   [docs/display-nvidia.md](docs/display-nvidia.md), [nullmoth-fix/](nullmoth-fix).
 
 - **Sleep (S3).** macOS enters sleep normally, but on wake the firmware does not resume and
@@ -78,6 +80,7 @@ This is a hobby project on one laptop. Everything here was tested on exactly one
 | [`drivers/ASUSG835WMI/`](drivers/ASUSG835WMI) | ASUS-WMI kext for the performance profiles |
 | [`audio/VoodooHDA/`](audio/VoodooHDA) | Build script for the VoodooHDA used here (WTLAudio based, with the SCAR edits) |
 | [`tools/asus-hotkeys/`](tools/asus-hotkeys) | Fn-key agent and the **ROG Licht** menu bar app (lighting, zones, performance profile) |
+| [`tools/nvpowerd-macos/`](tools/nvpowerd-macos) | macOS replacement for `nvidia-powerd`: 95/150/175 W GPU limit following the ASUS profile (launchd service) |
 | [`tools/diagnostics/`](tools/diagnostics) | HID logger, Aura report sender, audio device helper, ACPI dumper |
 | [`docs/`](docs) | Findings: [audio](docs/audio-tas2781.md), [ASUS keys](docs/asus-hotkeys.md), [display/NVIDIA](docs/display-nvidia.md), [OpenCore/boot](docs/opencore.md), [hardware](docs/hardware.md) |
 | [`install-kexts.sh`](install-kexts.sh) | Installs kexts to `/Library/Extensions` and rebuilds the Auxiliary Kernel Collection with backup and check |

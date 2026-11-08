@@ -6,3 +6,4 @@ out/
 drivers/TAS2781DirectI2C/firmware/*.bin
 drivers/TAS2781DirectI2C/TAS2781TestTables.hpp
 audio/VoodooHDA/VoodooHDA/
+nullmoth-fix/bin/

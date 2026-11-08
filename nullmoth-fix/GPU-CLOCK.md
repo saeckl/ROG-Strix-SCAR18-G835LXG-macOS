@@ -88,3 +88,19 @@ fullscreen 3840x2400, 94–97 % GPU load, 30 s per run. Throttle reason in every
 - Whether macOS currently reaches even the 95 W base is unclear: my Metal benchmark estimates ~1.0–1.1 GHz, but that
   estimate assumes perfect NAK code and may undercount. The large FPS gap (Windows Quiet at 95 W: 112 FPS, macOS:
   ~40–46) is mostly the Metal→Vulkan/NVK path, not the power limit.
+
+## macOS with nvpowerd-macos (8 Nov 2026, NullMoth 2.8 / RM 620.70.06)
+
+[tools/nvpowerd-macos](../tools/nvpowerd-macos) replaces `nvidia-powerd` (NVPCFBridge loaded). Same
+`sustained.swift` load, 15 s per profile, service `--watts 175` following the profile:
+
+| Profile | Limit set | Clock without service | Clock with service |
+| --- | --- | --- | --- |
+| Quiet | 95 W | ~1115 MHz | ~1117 MHz |
+| Balanced | 150 W | ~1115 MHz | ~1450 MHz |
+| Turbo | 175 W (CPU feedback, 270 W budget) | ~1120 MHz | ~1560 MHz |
+
+WoW (same spot): 39.6 / 40.2 / 40.8 FPS in Quiet / Balanced / Turbo with the service – unchanged. WoW on
+macOS is not limited by GPU power; the remaining gap to Windows (112–154 FPS) is the Metal→Vulkan/NVK
+path. Windows reaches 1409 / 1858 / 2035 MHz at the same limits, so part of the clock gap also remains
+(GPU load from the NVK path is lower).

@@ -1,0 +1,98 @@
+{
+  "pci.bin": {
+    "capture_id": 19,
+    "cmd": "0x20801801",
+    "sha256": "42e22165aa4ee420ca1b92768e8f8e87a20459d1e9c88127104ade6ab544988e",
+    "source": "powerd-Mitschnitt-Ubuntu-2026-11-08/ioctl.jsonl"
+  },
+  "supported.bin": {
+    "capture_id": 21,
+    "cmd": "0x13b",
+    "sha256": "8da7ae773daad06b227781304856afb0b6c7926ac1627c6e60661f35c890e759",
+    "source": "powerd-Mitschnitt-Ubuntu-2026-11-08/ioctl.jsonl"
+  },
+  "static.bin": {
+    "capture_id": 22,
+    "cmd": "0x13b",
+    "sha256": "a830688b1329399dda72f4b531a5f2171210995a7c09a07431216077aa417af2",
+    "source": "powerd-Mitschnitt-Ubuntu-2026-11-08/ioctl.jsonl"
+  },
+  "policy.bin": {
+    "capture_id": 41,
+    "cmd": "0x2080a630",
+    "sha256": "2c3f244a5c33389aeedcc17166cf3c90672d5c7bd70c1da829de7f8fb663029f",
+    "source": "powerd-Mitschnitt-Ubuntu-2026-11-08/ioctl.jsonl"
+  },
+  "policy_info.bin": {
+    "capture_id": 43,
+    "cmd": "0x2080a618",
+    "sha256": "c8aee0d8383d64c46ed170a6f3d7c88c672f9bab4f47f02be870bb1c23b087e4",
+    "source": "powerd-Mitschnitt-Ubuntu-2026-11-08/ioctl.jsonl"
+  },
+  "bios.bin": {
+    "capture_id": 44,
+    "cmd": "0x20800808",
+    "sha256": "62a6ccd194f69d15a5f4eb09da273315cfe588b437a8e5d226c30733fdad523a",
+    "source": "powerd-Mitschnitt-Ubuntu-2026-11-08/ioctl.jsonl"
+  },
+  "set-95000.bin": {
+    "capture_id": 49,
+    "cmd": "0x2080e634",
+    "sha256": "44cd1a5d6c1d41c794f710f7c5e02e5e1126d7a7372e0e798ea6743337cb0e26",
+    "source": "powerd-Mitschnitt-Ubuntu-2026-11-08/ioctl.jsonl"
+  },
+  "balanced.bin": {
+    "capture_id": 71,
+    "cmd": "0x13b",
+    "sha256": "78caf8116abf3e870b45fb85c0a82e041b6e6fd6eef79b053a58bd1956c3b6f4",
+    "source": "powerd-Mitschnitt-Ubuntu-2026-11-08/ioctl.jsonl"
+  },
+  "set-150000.bin": {
+    "capture_id": 78,
+    "cmd": "0x2080e634",
+    "sha256": "0b88020381e43dcb92e0d0d0af343a8b6ddfdbf288c9092ba301de577d963608",
+    "source": "powerd-Mitschnitt-Ubuntu-2026-11-08/ioctl.jsonl"
+  },
+  "notify-118.bin": {
+    "capture_id": 137,
+    "cmd": "0x20800301",
+    "sha256": "9da95d69928ab6b920a4c5815c25b94a75a608af8e0f174cdcbf3ea4c89385c8",
+    "source": "powerd-Mitschnitt-Ubuntu-2026-11-08/ioctl.jsonl"
+  },
+  "notify-181.bin": {
+    "capture_id": 139,
+    "cmd": "0x20800301",
+    "sha256": "c1d2c4acf14c0cab3f5abe96873eb5224b26a3a9ab2d196a2c16d00a497305d3",
+    "source": "powerd-Mitschnitt-Ubuntu-2026-11-08/ioctl.jsonl"
+  },
+  "notify-177.bin": {
+    "capture_id": 141,
+    "cmd": "0x20800301",
+    "sha256": "e410591038a10378232e6c8728a58a5a007b5b2d377437cec9f49b29aae335a6",
+    "source": "powerd-Mitschnitt-Ubuntu-2026-11-08/ioctl.jsonl"
+  },
+  "notify-33.bin": {
+    "capture_id": 143,
+    "cmd": "0x20800301",
+    "sha256": "12eb647c7b52aaaf97be783e682dbb027a11cfaf9ba0fb58efe47d0058c5496b",
+    "source": "powerd-Mitschnitt-Ubuntu-2026-11-08/ioctl.jsonl"
+  },
+  "quiet.bin": {
+    "capture_id": 258,
+    "cmd": "0x13b",
+    "sha256": "c37846fa8f5f05dbcfb6fb105c6e4761b3e6fd551da21305ba37011a2233a52c",
+    "source": "powerd-Mitschnitt-Ubuntu-2026-11-08/ioctl.jsonl"
+  },
+  "performance.bin": {
+    "capture_id": 550,
+    "cmd": "0x13b",
+    "sha256": "a5f7e64fee6ac0488d6c1603b31e6b1fc49cf3b38443e8d28cc1011314715a19",
+    "source": "powerd-Mitschnitt-Ubuntu-2026-11-08/ioctl.jsonl"
+  },
+  "set-175000.bin": {
+    "capture_id": 554,
+    "cmd": "0x2080e634",
+    "sha256": "d20c32b2a844195548316ac61b77219ca1a63ec32e859ef6784399c0d2ff35be",
+    "source": "powerd-Mitschnitt-Ubuntu-2026-11-08/ioctl.jsonl"
+  }
+}
