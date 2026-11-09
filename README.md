@@ -53,6 +53,8 @@ different APIs). Method, raw numbers and the public Geekbench results:
 | Fn+F2 / Fn+F3 keyboard backlight | **works** | asus-hotkeys (N-KEY feature report) |
 | Fn+F4 Aura effects | **works** | asus-hotkeys |
 | Lighting app (colours, 12 effects, zones keyboard / light bar / logo) | **works** | [ROG Licht](tools/asus-hotkeys) menu bar app (this repo) |
+| External display on HDMI | works **if connected at boot** (hot-plug not detected yet) | NullMoth 2.8.1 |
+| Lid closed with external display (external becomes main) | **works** | [clamshell-agent](tools/clamshell) (this repo) |
 | Fn+F7 / Fn+F8 display brightness | software dimming only | the NVIDIA driver exposes no backlight, see below |
 | Sleep / wake | **does not work** – the laptop reboots on wake (firmware is Modern Standby only, FADT `LOW_POWER_S0_IDLE`), see below | sleep disabled with `pmset` |
 | Internal microphone | works (tested) | VoodooHDA |
