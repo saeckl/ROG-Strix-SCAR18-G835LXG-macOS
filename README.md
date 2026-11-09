@@ -55,17 +55,13 @@ different APIs). Method, raw numbers and the public Geekbench results:
 | Lighting app (colours, 12 effects, zones keyboard / light bar / logo) | **works** | [ROG Licht](tools/asus-hotkeys) menu bar app (this repo) |
 | External display on HDMI | works **if connected at boot** (hot-plug not detected yet) | NullMoth 2.8.1 |
 | Lid closed with external display (external becomes main) | **works** | [clamshell-agent](tools/clamshell) (this repo) |
-| Fn+F7 / Fn+F8 display brightness | software dimming only | the NVIDIA driver exposes no backlight, see below |
+| Fn+F7 / Fn+F8 display brightness, brightness slider | **works** – real panel backlight (16 steps) | NullMoth 2.8 with boot-arg `nvrmacpibl=1` + [asus-hotkeys](tools/asus-hotkeys) (this repo) |
 | Sleep / wake | **does not work** – the laptop reboots on wake (firmware is Modern Standby only, FADT `LOW_POWER_S0_IDLE`), see below | sleep disabled with `pmset` |
 | Internal microphone | works (tested) | VoodooHDA |
 | Webcam (ASUS FHD) | works (FaceTime live, up to 1920×1080); Photo Booth takes photos but shows no live preview | native UVC |
 
 ## What does not work
 
-- **Real display brightness.** The internal panel is driven by the RTX 5090 (MUX = dGPU). The
-  NullMoth framebuffer does not register a backlight, `_BCM` of the panel is empty and ASUS-WMI
-  has no panel brightness. Fn+F7/F8 therefore dim with a gamma curve (25–100 %); the backlight
-  and power draw stay the same.
 - **World of Warcraft** runs since NullMoth 2.8 without a workaround (2.7.2 needed one, see below) at
   about 40–46 FPS, far below Windows (112 FPS in Quiet). With [nvpowerd-macos](tools/nvpowerd-macos)
   the GPU gets the same 150/175 W limits as on Windows (+30/40 % clock under sustained load), but WoW

@@ -10,8 +10,8 @@ Byte 1 of the report is the key code, `00` = released. One `EC` arrives at start
 | Fn+F2 | `C5` | keyboard backlight down (0..3) |
 | Fn+F3 | `C4` | keyboard backlight up |
 | Fn+F4 | `B3` | next Aura effect |
-| Fn+F7 | `10` | display darker (software) |
-| Fn+F8 | `20` | display brighter (software) |
+| Fn+F7 | `10` | display darker (real backlight, else gamma) |
+| Fn+F8 | `20` | display brighter (real backlight, else gamma) |
 
 ## Performance profiles (ASUS-WMI)
 
@@ -67,9 +67,11 @@ Input Monitoring. Fn+F4 / Fn+F2 / Fn+F3 update the same state and the app follow
 
 ## Display brightness
 
-Not possible in hardware with the NullMoth driver, see [display-nvidia.md](display-nvidia.md).
-The agent uses `CGSetDisplayTransferByFormula` on the built-in display (25–100 %) and re-applies it
-after wake and display changes.
+With NullMoth 2.8 and the boot-arg `nvrmacpibl=1` the panel is an `AppleBacklightDisplay`
+(see [display-nvidia.md](display-nvidia.md)). The agent then sets the real backlight through
+DisplayServices (`DisplayServicesSetBrightness`, 16 steps like a Mac), so the system brightness slider
+follows. Without a controllable backlight it falls back to the old gamma dimming
+(`CGSetDisplayTransferByFormula`, 25–100 %, re-applied after wake and display changes).
 
 ## The agent
 

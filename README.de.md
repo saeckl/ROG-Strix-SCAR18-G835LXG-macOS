@@ -16,11 +16,10 @@ OpenCore-EFI, Treiber und Befunde für **macOS 26 Tahoe** auf dem ASUS ROG Strix
 - **Fn+M4** Leistungsprofil Leise/Leistung/Turbo, Start im Leise-Profil wie unter Windows.
 - **Fn+F2/F3** Tastaturlicht, **Fn+F4** Aura-Effekte.
 - Menüleisten-App **ROG Licht**: Farben, 12 Effekte, Helligkeit, Zonen Tastatur/Lichtleiste/Logo und Leistungsprofil – wie die Beleuchtungsseite von Armoury Crate.
-- **Fn+F7/F8** Display-Helligkeit, aber nur per Software-Abdunkelung.
+- **Fn+F7/F8** und der Helligkeitsregler steuern die echte Hintergrundbeleuchtung (NullMoth 2.8 mit Boot-Argument `nvrmacpibl=1`).
 
 ## Was nicht geht
 
-- Echte Display-Helligkeit (der NVIDIA-Treiber bietet keine Hintergrundbeleuchtung an).
 - World of Warcraft läuft seit NullMoth 2.8, aber nur mit ca. 40 FPS (Windows: 112–154 FPS); der Engpass ist der Metal→Vulkan-Weg.
 
 ## Ruhezustand

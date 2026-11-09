@@ -3,8 +3,10 @@
 External displays on the HDMI port work with NullMoth 2.8.1 **when they are connected at boot**
 (a display plugged in later is not detected yet: NVRMFB lights the head, but logs
 `fb1 connect notify: nothing registered yet`, so macOS never gets the display; logging out and in does not help). macOS notices the lid (`AppleClamshellState`), but it
-only switches the built-in panel off for an `AppleBacklightDisplay`; NullMoth's framebuffer has no
-backlight control, so the panel is a plain `AppleDisplay` and stays the main display when the lid closes.
+only switches the built-in panel off for an `AppleBacklightDisplay`. Without NullMoth's opt-in backlight
+(boot-arg `nvrmacpibl=1`) the panel is a plain `AppleDisplay` and stays the main display when the lid closes.
+With the boot-arg the panel is an `AppleBacklightDisplay`; whether macOS then switches by itself is not
+tested yet, so the agent stays installed (it does nothing when the panel is already off).
 
 `clamshell-agent` does the switch itself (checked every second):
 

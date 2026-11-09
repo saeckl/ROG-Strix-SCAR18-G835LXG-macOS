@@ -3,7 +3,8 @@
 Two small programs for the ASUS ROG Strix SCAR 18 G835LXG (details: [docs/asus-hotkeys.md](../../docs/asus-hotkeys.md)):
 
 - **asus-hotkeys** – background agent (LaunchAgent). Handles the Fn keys and is the only process
-  that talks to the N-KEY keyboard (needs **Input Monitoring**).
+  that talks to the N-KEY keyboard (needs **Input Monitoring**). Fn+F7/F8 set the real panel
+  backlight when NullMoth provides one (boot-arg `nvrmacpibl=1`), otherwise gamma dimming.
 - **ROG Licht** – menu bar app, the macOS stand-in for Armoury Crate's lighting page:
   performance profile (Quiet / Balanced / Turbo), Aura effect, colour(s), speed, direction,
   brightness, and the lighting zones **keyboard, light bar, logo**, each separately for

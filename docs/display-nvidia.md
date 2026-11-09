@@ -13,10 +13,18 @@
 
 ## Known limits (2.7.2 – 2.8.1)
 
-- **No backlight control.** NVRMFB does not register a backlight for the panel, the panel's
-  `_BCM` (`\_SB.PC00.RP01.PXSX.EDP1`) is empty, ASUS-WMI has no panel brightness.
-  Workaround: gamma dimming (see asus-hotkeys). Possible future options: backlight support in
-  NullMoth, or hybrid mode via the Intel iGPU (not tested).
+- **Panel backlight: works with the boot-arg `nvrmacpibl=1`** (NullMoth 2.8, 9 Nov 2026). NullMoth ships
+  backlight support but keeps it opt-in, because the NBCI `_DSM` call hung the start on some PCs. With it,
+  RM reads the panel's backlight tables from the GPU's ACPI node (`\_SB.PC00.RP01.PXSX`, NBCI functions
+  0x10 GETOBJBYTYPE and 0x14 GETBACKLIGHT, plus `_DOD`); NVKMS registers the backlight, NVRMFB publishes a
+  `backlight` handler and macOS creates an `AppleBacklightDisplay`. Result: the brightness slider in
+  System Settings and Fn+F7/F8 ([asus-hotkeys](../tools/asus-hotkeys)) change the real backlight.
+  On this laptop the NBCI method in `SSDT-26` (`OemNv2T`) reports supported functions `0x00110001` and
+  picks one of 19 panel tables by EDID; the start was normal. Without the boot-arg the panel is a plain
+  `AppleDisplay` and the agent falls back to gamma dimming.
+- **Games always "Composited".** With the Metal HUD (`MTL_HUD_ENABLED=1`) full-screen games show
+  *Composited*, with *Direct* flashing about once per second, even with nothing on top and no gamma
+  table: direct-to-display presentation falls back immediately (NullMoth).
 - **World of Warcraft (Metal): black screen – no longer needed with NullMoth 2.8** (8 Nov 2026: WoW runs
   without the workaround, 0 failed pipelines; all 443 cached compute kernels compile with 2.8's NVK). With 2.7.2: `gx.log` showed
   `newComputePipelineState: vkCreateComputePipelines FAILED` (Prism) and `Device context was lost`

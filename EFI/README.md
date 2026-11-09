@@ -29,7 +29,8 @@ The EFI used on the test machine, with personal data removed. **It does not boot
 - `Kernel > Block com.apple.iokit.IONDRVSupport` – otherwise the boot framebuffer takes index 0
   from NullMoth's NVRMFB (added by 1401).
 - `DeviceProperties PciRoot(0x0)/Pci(0x2,0x0) disable-gpu` – Intel iGPU off (MUX = dGPU).
-- Boot-args `nvfb=1 nvaccel=1 nvfbheads=4 -nvkmsnosmooth` (NullMoth), `-vi2c-force-polling`
+- Boot-args `nvfb=1 nvaccel=1 nvfbheads=4 -nvkmsnosmooth` (NullMoth), `nvrmacpibl=1` (NullMoth panel
+  backlight through the NBCI `_DSM`, opt-in; see [docs/display-nvidia.md](../docs/display-nvidia.md)), `-vi2c-force-polling`
   (touchpad), `-ibtcompatbeta`, `-amfipassbeta`, `revpatch=sbvmm`, `ctrsmt=full`.
 - `csr-active-config 0x0A43` – needed for kexts in `/Library/Extensions` (VoodooHDA, TAS2781,
   ASUS-WMI, NullMoth).

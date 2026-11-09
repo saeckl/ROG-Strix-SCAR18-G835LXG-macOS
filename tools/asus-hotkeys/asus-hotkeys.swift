@@ -2,8 +2,8 @@
 // Liest die Fn-Tasten vom ASUS-Kanal der N-KEY-Tastatur (Report 0x5A):
 //   Fn+M4 (0xAE)  Leistungsprofil Leise -> Leistung -> Turbo (ASUSG835WMI-Kext)
 //   Fn+F2 (0xC5)  Tastaturlicht dunkler, Fn+F3 (0xC4) heller (Stufe 0..3)
-//   Fn+F7 (0x10)  Display dunkler, Fn+F8 (0x20) heller (Software-Abdunkelung per Farbkurve,
-//                 weil der NVIDIA-Treiber fuer das interne Panel keine Helligkeit anbietet)
+//   Fn+F7 (0x10)  Display dunkler, Fn+F8 (0x20) heller (echte Hintergrundbeleuchtung, sonst Farbkurve)
+//                 (Hintergrundbeleuchtung braucht NullMoth >= 2.8 mit boot-arg nvrmacpibl=1)
 //   Fn+F4 (0xB3)  naechster Aura-Effekt
 // Beleuchtung (Farbe, Effekt, Zonen) steht in lighting.json und wird von der App "ROG Licht"
 // geaendert; die App schickt dann die Mitteilung de.codex.asushotkeys.lighting.
@@ -134,11 +134,52 @@ func cycleProfile() {
     changed()
 }
 
-// MARK: Displayhelligkeit (Software-Abdunkelung)
+// MARK: Displayhelligkeit
+// Mit NullMoth 2.8 und boot-arg nvrmacpibl=1 hat das Panel eine echte Hintergrundbeleuchtung
+// (AppleBacklightDisplay). Dann regeln Fn+F7/F8 sie ueber DisplayServices wie der Systemregler
+// (16 Stufen). Ohne Hintergrundbeleuchtung bleibt die Software-Abdunkelung per Farbkurve.
+
+typealias DSCanFn = @convention(c) (UInt32) -> Bool
+typealias DSGetFn = @convention(c) (UInt32, UnsafeMutablePointer<Float>) -> Int32
+typealias DSSetFn = @convention(c) (UInt32, Float) -> Int32
+let ds = dlopen("/System/Library/PrivateFrameworks/DisplayServices.framework/DisplayServices", RTLD_NOW)
+func dsSym<T>(_ n: String, _ t: T.Type) -> T? { ds.flatMap { dlsym($0, n) }.map { unsafeBitCast($0, to: t) } }
+let dsCan = dsSym("DisplayServicesCanChangeBrightness", DSCanFn.self)
+let dsGet = dsSym("DisplayServicesGetBrightness", DSGetFn.self)
+let dsSet = dsSym("DisplayServicesSetBrightness", DSSetFn.self)
+
+func builtinDisplay() -> CGDirectDisplayID? {
+    var count: UInt32 = 0
+    CGGetOnlineDisplayList(0, nil, &count)
+    var ids = [CGDirectDisplayID](repeating: 0, count: Int(count))
+    CGGetOnlineDisplayList(count, &ids, &count)
+    return ids.first { CGDisplayIsBuiltin($0) != 0 }
+}
+
+func hasBacklight() -> Bool {
+    guard let d = builtinDisplay(), let can = dsCan, dsGet != nil, dsSet != nil else { return false }
+    return can(d)
+}
+
+func changeBacklight(_ delta: Int) -> Bool {
+    guard hasBacklight(), let d = builtinDisplay(), let get = dsGet, let set = dsSet else { return false }
+    var cur: Float = 1
+    _ = get(d, &cur)
+    let step = (cur * 16).rounded() + Float(delta)
+    let value = max(0, min(16, step)) / 16
+    let r = set(d, value)
+    log("Hintergrundbeleuchtung \(Int(value * 100)) % (\(r))")
+    return true
+}
 
 var dimLevel = defaults.object(forKey: "dim") as? Int ?? 10   // 0..10, 10 = volle Helligkeit
 
 func applyDim() {
+    if hasBacklight() {                      // echte Hintergrundbeleuchtung: keine Farbkurve
+        if dimLevel < 10 { dimLevel = 10; defaults.set(10, forKey: "dim") }
+        CGDisplayRestoreColorSyncSettings()
+        return
+    }
     let factor = Float(0.25 + 0.075 * Double(dimLevel))       // 25 % .. 100 %
     var count: UInt32 = 0
     CGGetOnlineDisplayList(0, nil, &count)
@@ -154,6 +195,7 @@ func applyDim() {
 }
 
 func changeDim(_ delta: Int) {
+    if changeBacklight(delta) { return }
     dimLevel = max(0, min(10, dimLevel + delta))
     defaults.set(dimLevel, forKey: "dim")
     applyDim()
