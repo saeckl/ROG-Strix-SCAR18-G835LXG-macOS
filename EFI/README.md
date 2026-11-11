@@ -26,6 +26,8 @@ The EFI used on the test machine, with personal data removed. **It does not boot
 
 ## Changes compared with a generic Arrow Lake EFI
 
+- `NVPCFBridge.kext` right after Lilu – NVPCF `_DSM` for NullMoth, needed by nvpowerd-macos for 150/175 W
+  (source in [nullmoth-fix/nvpcf-bridge](../nullmoth-fix/nvpcf-bridge)).
 - `Kernel > Block com.apple.iokit.IONDRVSupport` – otherwise the boot framebuffer takes index 0
   from NullMoth's NVRMFB (added by 1401).
 - `DeviceProperties PciRoot(0x0)/Pci(0x2,0x0) disable-gpu` – Intel iGPU off (MUX = dGPU).

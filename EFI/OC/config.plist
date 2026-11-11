@@ -370,6 +370,24 @@
 			</dict>
 			<dict>
 				<key>Arch</key>
+				<string>x86_64</string>
+				<key>BundlePath</key>
+				<string>NVPCFBridge.kext</string>
+				<key>Comment</key>
+				<string>NVPCF _DSM for NullMoth NVRM (laptop GPU power)</string>
+				<key>Enabled</key>
+				<true/>
+				<key>ExecutablePath</key>
+				<string>Contents/MacOS/NVPCFBridge</string>
+				<key>MaxKernel</key>
+				<string></string>
+				<key>MinKernel</key>
+				<string></string>
+				<key>PlistPath</key>
+				<string>Contents/Info.plist</string>
+			</dict>
+			<dict>
+				<key>Arch</key>
 				<string>Any</string>
 				<key>BundlePath</key>
 				<string>AMFIPass.kext</string>
@@ -1145,11 +1163,11 @@
 		<array>
 			<dict>
 				<key>Arguments</key>
-				<string></string>
+				<string>once</string>
 				<key>Auxiliary</key>
-				<true/>
+				<false/>
 				<key>Comment</key>
-				<string>NullMoth: remove the NVIDIA driver at the next start</string>
+				<string>NullMoth: start macOS once without the NVIDIA driver</string>
 				<key>Enabled</key>
 				<true/>
 				<key>Flavour</key>
@@ -1157,7 +1175,7 @@
 				<key>FullNvramAccess</key>
 				<true/>
 				<key>Name</key>
-				<string>1401: Remove NVIDIA driver</string>
+				<string>1401: Start once without NVIDIA driver</string>
 				<key>Path</key>
 				<string>NullMothSafe.efi</string>
 				<key>RealPath</key>

@@ -89,7 +89,7 @@ different APIs). Method, raw numbers and the public Geekbench results:
 | [`tools/asus-hotkeys/`](tools/asus-hotkeys) | Fn-key agent and the **ROG Licht** menu bar app (lighting, zones, performance profile) |
 | [`tools/nvpowerd-macos/`](tools/nvpowerd-macos) | macOS replacement for `nvidia-powerd`: 95/150/175 W GPU limit following the ASUS profile (launchd service) |
 | [`tools/diagnostics/`](tools/diagnostics) | HID logger, Aura report sender, audio device helper, ACPI dumper |
-| [`docs/`](docs) | Findings: [audio](docs/audio-tas2781.md), [ASUS keys](docs/asus-hotkeys.md), [display/NVIDIA](docs/display-nvidia.md), [OpenCore/boot](docs/opencore.md), [hardware](docs/hardware.md) |
+| [`docs/`](docs) | Findings: [audio](docs/audio-tas2781.md), [ASUS keys](docs/asus-hotkeys.md), [display/NVIDIA](docs/display-nvidia.md), [OpenCore/boot](docs/opencore.md), [hardware](docs/hardware.md), [rebuild checklist](docs/rebuild-checklist.md) |
 | [`install-kexts.sh`](install-kexts.sh) | Installs kexts to `/Library/Extensions` and rebuilds the Auxiliary Kernel Collection with backup and check |
 
 ## Installation (short)
@@ -112,7 +112,9 @@ its manager app **1401**.
    Approve in System Settings → Privacy & Security, restart.
 7. **Fn keys and ROG Licht**: `tools/asus-hotkeys/install.sh`, allow Input Monitoring.
 
-Details for each step are in the README of each folder and in [`docs/`](docs).
+Details for each step are in the README of each folder and in [`docs/`](docs). The complete list for a fresh
+install, device by device and in order (written so an AI assistant can follow it), is
+[docs/rebuild-checklist.md](docs/rebuild-checklist.md).
 
 ## How the speakers were made to work (summary)
 

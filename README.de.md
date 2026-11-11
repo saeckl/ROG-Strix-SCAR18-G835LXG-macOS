@@ -27,6 +27,13 @@ OpenCore-EFI, Treiber und Befunde für **macOS 26 Tahoe** auf dem ASUS ROG Strix
 Funktioniert nicht: Beim Aufwachen startet der Laptop neu (BIOS setzt S3 nicht fort, vermutlich nur
 Modern Standby). Lösung hier: Systemschlaf mit `pmset` abschalten, nur der Bildschirm geht aus.
 
+## Neuinstallation
+
+Komplette Schritt-für-Schritt-Liste für eine frische macOS-26-Installation, Gerät für Gerät und Dienst für
+Dienst (auch für KI-Assistenten geschrieben): [docs/rebuild-checklist.md](docs/rebuild-checklist.md).
+Wichtig: WLAN braucht neben den Kexts in der EFI den OCLP-Root-Patch „Modern Wireless“; im Installer gibt es
+kein WLAN, dort ein LAN-Kabel nutzen.
+
 ## Kern der Ton-Lösung
 
 1. Die TAS2781-Verstärker liefern nach dem macOS-Start auf jedem Register `0x00`, bis ein
