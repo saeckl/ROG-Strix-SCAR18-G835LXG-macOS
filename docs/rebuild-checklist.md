@@ -5,7 +5,7 @@ reference install. The list is ordered: work from top to bottom, check each step
 next one, and do not skip the checks.
 
 Reference state (11 Nov 2026): macOS 26.7.2 (25G332), OpenCore 1.0.9, SMBIOS MacBookPro16,2,
-NullMoth NVIDIA driver 2.9 (open RM 620.70.06), OCLP-CustoMac 3.0.3 root patch "Modern Wireless".
+NullMoth NVIDIA driver 3.0 (open RM 620.70.06), OCLP-CustoMac 3.0.3 root patch "Modern Wireless".
 
 ## 0. Rules
 
@@ -58,7 +58,7 @@ disks are added or removed.
 | 2 | macOS update to 26.7.2 (Software Update) | Ethernet |
 | 3 | Xcode Command Line Tools: `xcode-select --install`, then `sudo xcode-select -s /Library/Developer/CommandLineTools` | – |
 | 4 | Wi-Fi root patch (OCLP-CustoMac) | Ethernet, EFI with AMFIPass + SIP 0x0A43 |
-| 5 | NullMoth driver 2.9 **with DLSS** | 1401 or the 2.9 package |
+| 5 | NullMoth driver 3.0 **with DLSS** | 1401 or the 2.9 package |
 | 6 | Own kexts: VoodooHDA, TAS2781DirectI2C, ASUSG835WMI | Command Line Tools |
 | 7 | nvpowerd-macos | NullMoth installed, NVPCFBridge in EFI |
 | 8 | asus-hotkeys + ROG Licht, clamshell-agent | ASUSG835WMI |
@@ -75,7 +75,7 @@ sudo ./install-kexts.sh audio/VoodooHDA/out/VoodooHDA.kext \
 ```
 
 The script keeps a backup of the Auxiliary Kernel Collection and stops if a kext that is loaded now
-(including NullMoth's) would be missing afterwards. After it runs, approve the kexts in System Settings → Privacy & Security if
+(including NullMoth's and Apple's from `/Library/Apple/System/Library/Extensions`) would be missing afterwards. After it runs, approve the kexts in System Settings → Privacy & Security if
 asked, then restart.
 
 ## 4. Device by device
@@ -133,35 +133,41 @@ EFI only: RTL812xLucy. `AppleEthernetRL` is blocked. Works in the installer too.
 
 ### NVIDIA RTX 5090 Laptop – NullMoth driver
 
-- Install **NullMoth 2.9** with the **1401** app (driver only, do not let it rebuild the EFI). The 1401 USB installer stick also carries
-  `NullMoth/nullmoth-nvidia-2.9.tar.gz`.
+- Install **NullMoth 3.0** with the **1401** app (driver only, do not let it rebuild the EFI). The 1401 USB installer stick also carries
+  the driver package in its `NullMoth/` folder.
 - It installs `NVRM`, `NVRMFB`, `NVAccel`, `NVRMAGDC` and `NMXAudio` (HDMI audio) into `/Library/Extensions`, the Metal plugin into
   `/Library/GPUBundles/nvmtl/`, and `com.nullmoth.bootguard` / `com.nullmoth.recover` daemons.
 - Settings file `/Library/GPUBundles/nvmtl/nvrm610.conf`, user block (survives updates):
   ```
   # --- my settings, kept on update ---
   NVMTL_SHARED_VRAM=1
+  NVMTL_NAK_NO_PREDLOAD=1
   # --- end my settings ---
   ```
-  Do **not** add `NVMTL_NAK_NO_PREDLOAD=1` (removed on purpose; it was only a workaround for the WoW black
-  screen on 2.9).
+  `NVMTL_NAK_NO_PREDLOAD=1` is a workaround for WoW compute pipelines ("vkCreateComputePipelines FAILED").
+  Remove it once NullMoth fixes the NAK predload pass.
+- **After every NullMoth update** check `kextstat | grep asusg835wmi`. The 3.0 installer rebuilt the
+  Auxiliary Kernel Collection without `ASUSG835WMI` (profiles and Fn keys stopped working). Fix: run
+  `sudo ./install-kexts.sh drivers/ASUSG835WMI/build/ASUSG835WMI.kext` and restart.
 
 Check:
 ```bash
-cat /Library/NullMoth/driver-version          # 2.9
+cat /Library/NullMoth/driver-version          # 3.0
 kextstat | grep nullmoth                      # NVRM, NVRMFB, NVAccel, NVRMAGDC, NMXAudio
 system_profiler SPDisplaysDataType | grep -E "Chipset|Metal"
 ```
 
-Known open issues with 2.9 (wait for NullMoth, do not work around): HDMI hot-plug (only a display connected
-at boot works), WoW black screen / flicker, "Composited" instead of "Direct" in games.
+Known open issues with 3.0 (wait for NullMoth): HDMI hot-plug (only a display connected at boot works),
+WoW black screen / flicker (the translator refuses `air.interpolate_center_perspective`, "Shader entrypoint
+'_main' not found"), "Composited" instead of "Direct" in games.
 
 ### DLSS (MetalFX through NullMoth)
 
-DLSS is an option of the NullMoth installer, not on by default. From the unpacked 2.9 package:
+DLSS is an option of the NullMoth installer, not on by default. An update with the same RM version keeps
+the DLSS files. From the unpacked driver package:
 
 ```bash
-tar -xzf nullmoth-nvidia-2.9.tar.gz && cd pkgroot
+tar -xzf nullmoth-nvidia-3.0.tar.gz && cd pkgroot
 sudo env NULLMOTH_DLSS=1 ./install.sh
 ```
 

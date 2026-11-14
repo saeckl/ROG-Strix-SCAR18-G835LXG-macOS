@@ -26,7 +26,7 @@ for src in "$@"; do
     ditto "$src" "$ext/$k"; chown -R root:wheel "$ext/$k"; chmod -R go-w "$ext/$k"; installed+=("$k")
 done
 kmutil create -n aux --volume-root / --allow-missing-kdk -B "$base/BootKernelExtensions.kc" \
-    -S "$base/SystemKernelExtensions.kc" --repository "$ext" -A "$candidate" -z >"$backup/kmutil.log" 2>&1 \
+    -S "$base/SystemKernelExtensions.kc" --repository "$ext" --repository /Library/Apple/System/Library/Extensions -A "$candidate" -z >"$backup/kmutil.log" 2>&1 \
     || { tail -30 "$backup/kmutil.log"; restore; }
 if [[ -f "$old" ]]; then
     # Kexts that were only loaded from a temporary folder may drop out; everything else must stay.
