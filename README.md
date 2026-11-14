@@ -38,7 +38,7 @@ different APIs). Method, raw numbers and the public Geekbench results:
 | Function | Status | How |
 | --- | --- | --- |
 | Boot, multi-boot macOS / Windows / Ubuntu | **works** (tested) | OpenCore 1.0.9, text picker showing only macOS, Windows, Linux; 10 s timeout → macOS |
-| NVIDIA RTX 5090, internal panel, Metal | works with limitations | [NullMoth NVIDIA driver](https://github.com/nullmoth/nvidia-macos-driver) 2.8.1 (open RM 620.70.06) |
+| NVIDIA RTX 5090, internal panel, Metal | works with limitations | [NullMoth NVIDIA driver](https://github.com/nullmoth/nvidia-macos-driver) 3.0 (open RM 620.70.06) |
 | Internal speakers (left + right, balance slider) | **works** | VoodooHDA + [TAS2781DirectI2C](drivers/TAS2781DirectI2C) (this repo) |
 | Headphone jack | works; plugging in mutes the speakers | VoodooHDA + jack sense in TAS2781DirectI2C 0.5.2 |
 | Volume, mute | works | macOS volume → DAC gain |
@@ -53,16 +53,19 @@ different APIs). Method, raw numbers and the public Geekbench results:
 | Fn+F2 / Fn+F3 keyboard backlight | **works** | asus-hotkeys (N-KEY feature report) |
 | Fn+F4 Aura effects | **works** | asus-hotkeys |
 | Lighting app (colours, 12 effects, zones keyboard / light bar / logo) | **works** | [ROG Licht](tools/asus-hotkeys) menu bar app (this repo) |
-| External display on HDMI | works **if connected at boot** (hot-plug not detected yet) | NullMoth 2.8.1 |
+| External display on HDMI | works **if connected at boot** (hot-plug still not detected on 3.0) | NullMoth 3.0 |
 | Lid closed with external display (external becomes main) | **works** | [clamshell-agent](tools/clamshell) (this repo) |
-| Fn+F7 / Fn+F8 display brightness, brightness slider | **works** – real panel backlight (16 steps) | NullMoth 2.8 with boot-arg `nvrmacpibl=1` + [asus-hotkeys](tools/asus-hotkeys) (this repo) |
+| Fn+F7 / Fn+F8 display brightness, brightness slider | **works** – real panel backlight (16 steps) | NullMoth ≥ 2.8 with boot-arg `nvrmacpibl=1` + [asus-hotkeys](tools/asus-hotkeys) (this repo) |
 | Sleep / wake | **does not work** – the laptop reboots on wake (firmware is Modern Standby only, FADT `LOW_POWER_S0_IDLE`), see below | sleep disabled with `pmset` |
 | Internal microphone | works (tested) | VoodooHDA |
-| Webcam (ASUS FHD) | works (FaceTime live, up to 1920×1080); Photo Booth takes photos but shows no live preview | native UVC |
+| Webcam (ASUS FHD) | works (FaceTime live, up to 1920×1080); Photo Booth takes photos but shows no live preview (also on NullMoth 3.0) | native UVC |
 
 ## What does not work
 
-- **World of Warcraft** runs since NullMoth 2.8 without a workaround (2.7.2 needed one, see below) at
+- **World of Warcraft** does **not start on NullMoth 2.9 and 3.0**: black screen with the taskbar flickering in.
+  The shader translator refuses `air.interpolate_center_perspective` ("Shader entrypoint '_main' not found"),
+  and without `NVMTL_NAK_NO_PREDLOAD=1` ([tools/nvmtl-option](tools/nvmtl-option)) compute pipelines fail too.
+  Reported to NullMoth; waiting for a fix. On 2.8 / 2.8.1 it ran without a workaround at
   about 40–46 FPS, far below Windows (112 FPS in Quiet). With [nvpowerd-macos](tools/nvpowerd-macos)
   the GPU gets the same 150/175 W limits as on Windows (+30/40 % clock under sustained load), but WoW
   stays at ~40 FPS in every profile: the bottleneck is the Metal→Vulkan/NVK path, not GPU power. Details and a patch for NullMoth:
@@ -88,6 +91,7 @@ different APIs). Method, raw numbers and the public Geekbench results:
 | [`audio/VoodooHDA/`](audio/VoodooHDA) | Build script for the VoodooHDA used here (WTLAudio based, with the SCAR edits) |
 | [`tools/asus-hotkeys/`](tools/asus-hotkeys) | Fn-key agent and the **ROG Licht** menu bar app (lighting, zones, performance profile) |
 | [`tools/nvpowerd-macos/`](tools/nvpowerd-macos) | macOS replacement for `nvidia-powerd`: 95/150/175 W GPU limit following the ASUS profile (launchd service) |
+| [`tools/nvmtl-option/`](tools/nvmtl-option) | Turn NullMoth Metal options (`NVMTL_*`) on/off in the update-safe block of `nvrm610.conf` |
 | [`tools/diagnostics/`](tools/diagnostics) | HID logger, Aura report sender, audio device helper, ACPI dumper |
 | [`docs/`](docs) | Findings: [audio](docs/audio-tas2781.md), [ASUS keys](docs/asus-hotkeys.md), [display/NVIDIA](docs/display-nvidia.md), [OpenCore/boot](docs/opencore.md), [hardware](docs/hardware.md), [rebuild checklist](docs/rebuild-checklist.md) |
 | [`install-kexts.sh`](install-kexts.sh) | Installs kexts to `/Library/Extensions` and rebuilds the Auxiliary Kernel Collection with backup and check |
